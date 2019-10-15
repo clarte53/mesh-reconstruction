@@ -1,0 +1,24 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel ClearVertexBuffer_1022
+
+struct Vert
+{
+	float4 position;
+	float4 color;
+};
+
+RWStructuredBuffer<Vert> vertexBuffer;
+
+[numthreads(1022, 1, 1)]
+void ClearVertexBuffer_1022(uint3 id : SV_DispatchThreadID)
+{
+	//The mesh read back code treats verts with a -1 for w position
+	//as blank. Thats why Im using -1s.
+
+	Vert vert;
+	vert.position = float4(-1,-1,-1,-1);
+			
+	vert.color = float4(0, 0, 0, 0);
+
+	vertexBuffer[id.x] = vert;
+}
