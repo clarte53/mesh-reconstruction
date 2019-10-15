@@ -1,0 +1,59 @@
+﻿#include "ProceduralRenderingHelpers.cginc"
+
+// One kernel to Generate XYZTexture from kinect data
+// One kernel to Generate ColorTexture from kinect data
+#pragma kernel VertexGenerator
+#pragma kernel ColorGenerator
+
+int depthWidth;
+int depthHeight;
+int colorWidth;
+int colorHeight;
+StructuredBuffer<float3> Input_positionData;
+StructuredBuffer<uint> Input_colorData;
+StructuredBuffer<float2> Input_uvData;
+
+RWTexture2D<float4> Output_vertexTexture;
+RWTexture2D<float4> Output_colorTexture;
+
+
+
+[numthreads(1, 1, 1)]
+void VertexGenerator(uint3 id : SV_DispatchThreadID)
+{
+	//int index = depthWidth * id.y + id.x;
+	int index = depthWidth * (depthHeight - id.y) + (depthWidth -id.x);
+
+	// Get results
+	float output_x = -Input_positionData[index].x;
+	float output_y = Input_positionData[index].y;
+	float output_z = Input_positionData[index].z;
+
+	float2 uv = float2(Input_uvData[index].x / (float)colorWidth, Input_uvData[index].y / (float)colorHeight);
+	uv.y = 1.0 - uv.y;
+	uv.x = 1.0 - uv.x;
+
+	float output_uv = EncodeUV(uv);
+
+	// Fill rendertexture
+	Output_vertexTexture[id.xy] = float4(output_x, output_y, output_z, output_uv);
+}
+
+[numthreads(1, 1, 1)]
+void ColorGenerator(uint3 id : SV_DispatchThreadID)
+{
+	//int index = colorWidth * id.y + id.x;
+	int index = colorWidth * (colorHeight - id.y) + (colorWidth - id.x);
+
+	// Get results from color data buffer
+	uint uintColor = Input_colorData[index];
+
+	// Split uint to get the 4 bytes of color
+	uint output_byte_b = (uintColor >> 0) & 0xff;
+	uint output_byte_g = (uintColor >> 8) & 0xff;
+	uint output_byte_r = (uintColor >> 16) & 0xff;
+	uint output_byte_a = (uintColor >> 24) & 0xff;
+
+	// Fill rendertexture
+	Output_colorTexture[id.xy] = float4(float(output_byte_r) / 255.0, float(output_byte_g) / 255.0, float(output_byte_b) / 255.0, float(output_byte_a) / 255.0);
+}
