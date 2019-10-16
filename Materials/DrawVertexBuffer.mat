@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: DrawVertexBuffer
-  m_Shader: {fileID: 4800000, guid: d85d6613d0af5de458c09845525c5573, type: 3}
+  m_Shader: {fileID: 4800000, guid: 76b9a1e90bf45824c9d3252c838db0ba, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
