@@ -1,0 +1,130 @@
+﻿#include "ProceduralRenderingHelpers.cginc"
+
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel ClearVertexBuffer_1022_1_1
+#pragma kernel ClearVertexBuffer_719_1_1
+#pragma kernel ClearVertexBuffer_990_1_1
+#pragma kernel ClearVertexBuffer_741_1_1
+
+#pragma kernel FillVertexBuffer_512_2_1
+#pragma kernel FillVertexBuffer_256_4_1
+#pragma kernel FillVertexBuffer_21_47_1
+#pragma kernel FillVertexBuffer_128_8_1
+
+// Fallback kernels
+#pragma kernel ClearVertexBuffer_1_1_1
+#pragma kernel FillVertexBuffer_1_1_1
+
+Texture2D<float4> Input_vertexTexture;
+matrix<float, 4, 4> pointsToClippingBox;
+int width;
+
+RWStructuredBuffer<Vert> vertexBuffer;
+
+float maxEdgeLength;
+
+void ClearBuffer(uint3 id)
+{
+	//The mesh read back code treats verts with a -1 for w position
+	//as blank. Thats why Im using -1s.
+
+	Vert vert;
+	vert.position = float4(-1, -1, -1, -1);
+
+	vert.uv = float2(0, 0);
+
+	vertexBuffer[id.x] = vert;
+}
+
+void FillBuffer(uint3 id)
+{
+	float4 p1 = Input_vertexTexture[uint2(id.x + 0, id.y + 0)];
+	float4 p2 = Input_vertexTexture[uint2(id.x + 0, id.y + 1)];
+	float4 p3 = Input_vertexTexture[uint2(id.x + 1, id.y + 0)];
+	float4 p4 = Input_vertexTexture[uint2(id.x + 1, id.y + 1)];
+
+
+	bool discard_p1 = ShouldPointBeDiscarded(pointsToClippingBox, p1.xyz);
+
+	if (discard_p1)
+	{
+		return;
+	}
+
+	if(abs(p1.z - p2.z) > maxEdgeLength || abs(p1.z - p3.z) > maxEdgeLength || abs(p2.z - p4.z) > maxEdgeLength || abs(p3.z - p4.z) > maxEdgeLength)
+	{
+		return;
+	}
+
+	int index = id.x + id.y * width;
+
+	vertexBuffer[6 * index + 0] = CreateVertex(p1);
+	vertexBuffer[6 * index + 1] = CreateVertex(p4);
+	vertexBuffer[6 * index + 2] = CreateVertex(p3);
+
+	vertexBuffer[6 * index + 3] = CreateVertex(p1);
+	vertexBuffer[6 * index + 4] = CreateVertex(p2);
+	vertexBuffer[6 * index + 5] = CreateVertex(p4);
+}
+
+
+[numthreads(1022, 1, 1)]
+void ClearVertexBuffer_1022_1_1(uint3 id : SV_DispatchThreadID)
+{
+	ClearBuffer(id);
+}
+
+[numthreads(719, 1, 1)]
+void ClearVertexBuffer_719_1_1(uint3 id : SV_DispatchThreadID)
+{
+	ClearBuffer(id);
+}
+
+[numthreads(990, 1, 1)]
+void ClearVertexBuffer_990_1_1(uint3 id : SV_DispatchThreadID)
+{
+	ClearBuffer(id);
+}
+
+[numthreads(741, 1, 1)]
+void ClearVertexBuffer_741_1_1(uint3 id : SV_DispatchThreadID)
+{
+	ClearBuffer(id);
+}
+
+[numthreads(512, 2, 1)]
+void FillVertexBuffer_512_2_1(uint3 id : SV_DispatchThreadID)
+{
+	FillBuffer(id);
+}
+
+[numthreads(256, 4, 1)]
+void FillVertexBuffer_256_4_1(uint3 id : SV_DispatchThreadID)
+{
+	FillBuffer(id);
+}
+
+[numthreads(21, 47, 1)]
+void FillVertexBuffer_21_47_1(uint3 id : SV_DispatchThreadID)
+{
+	FillBuffer(id);
+}
+
+[numthreads(128, 8, 1)]
+void FillVertexBuffer_128_8_1(uint3 id : SV_DispatchThreadID)
+{
+	FillBuffer(id);
+}
+
+// Fallback kernels
+[numthreads(1, 1, 1)]
+void ClearVertexBuffer_1_1_1(uint3 id : SV_DispatchThreadID)
+{
+	ClearBuffer(id);
+}
+
+[numthreads(1, 1, 1)]
+void FillVertexBuffer_1_1_1(uint3 id : SV_DispatchThreadID)
+{
+	FillBuffer(id);
+}
