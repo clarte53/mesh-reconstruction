@@ -1,4 +1,5 @@
-﻿using sl;
+﻿#if !DISABLE_ZED_SUPPORT
+using sl;
 using UnityEngine;
 
 public class ZED_PointCloudProvider : PointCloudProvider
@@ -128,3 +129,4 @@ public class ZED_PointCloudProvider : PointCloudProvider
 	}
 	#endregion
 }
+#endif

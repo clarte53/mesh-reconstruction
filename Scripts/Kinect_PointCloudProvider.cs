@@ -1,4 +1,5 @@
-﻿using CLARTE.Dev.Profiling;
+﻿#if !DISABLE_KINECT_SUPPORT
+using CLARTE.Dev.Profiling;
 using System.Threading;
 using UnityEngine;
 using Windows.Kinect;
@@ -373,3 +374,4 @@ public class Kinect_PointCloudProvider : PointCloudProvider
     }
 	#endregion
 }
+#endif
