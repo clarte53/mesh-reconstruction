@@ -1,0 +1,47 @@
+﻿#include "ProceduralRenderingHelpers.cginc"
+
+// One kernel to Generate XYZTexture from Zed data
+// One kernel to Generate ColorTexture from Zed data
+#pragma kernel VertexGenerator
+#pragma kernel ColorGenerator
+
+int depthWidth;
+int depthHeight;
+int colorWidth;
+int colorHeight;
+
+Texture2D<float4> Input_positionData;
+Texture2D<float4> Input_colorData;
+
+RWTexture2D<float4> Output_vertexTexture;
+RWTexture2D<float4> Output_colorTexture;
+
+[numthreads(1, 1, 1)]
+void VertexGenerator(uint3 id : SV_DispatchThreadID)
+{
+	float4 p = Input_positionData[uint2(id.x, depthHeight - id.y)];
+
+	float output_x = p.x;
+	float output_y = p.y;
+	float output_z = p.z;
+
+	float2 uv = float2((float)(id.x) / (float)depthWidth, (float)(id.y) / (float)depthHeight);
+
+	float output_uv = EncodeUV(uv);
+
+	// Fill rendertexture
+	Output_vertexTexture[id.xy] = float4(output_x, output_y, output_z, output_uv);
+}
+
+[numthreads(1, 1, 1)]
+void ColorGenerator(uint3 id : SV_DispatchThreadID)
+{
+	
+
+	// Get results from color data buffer
+	float4 color = Input_colorData[uint2(id.x, colorHeight - id.y)];
+
+	
+	// Fill rendertexture
+	Output_colorTexture[id.xy] = color.bgra;
+}
