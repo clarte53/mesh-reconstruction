@@ -648,7 +648,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1843916302}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edae7690bc78e064691db3fb898acc75, type: 3}
   m_Name: 
@@ -665,14 +665,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1843916302}
-  m_LocalRotation: {x: 0.81521815, y: -0.015287802, z: 0.06435699, w: 0.57536405}
-  m_LocalPosition: {x: 0.009, y: 0, z: -0.131}
+  m_LocalRotation: {x: -0.10294221, y: 0.54746133, z: -0.8249686, w: -0.09547679}
+  m_LocalPosition: {x: 0.526, y: 2.266, z: 1.197}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 177039654}
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 109.93799, y: -14.84, z: -8.283997}
+  m_LocalEulerAnglesHint: {x: 112.64099, y: 189.768, z: -6.685974}
 --- !u!114 &1843916307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -680,7 +680,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1843916302}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1441330b36538e54685d937d8a2fb696, type: 3}
   m_Name: 
@@ -689,7 +689,7 @@ MonoBehaviour:
     type: 3}
   drawBuffer: {fileID: 2100000, guid: 9972fd133c51e4a4aa4025c3a1fab5b6, type: 2}
   clippingBox: {fileID: 844131550}
-  maxEdgeLength: 0.005
+  maxEdgeLength: 0.02
 --- !u!1 &1879257435
 GameObject:
   m_ObjectHideFlags: 0
