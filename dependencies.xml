@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<DependenciesList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <name>mesh-reconstruction</name>
+  <dependencies>
+    <DependencyDesc>
+      <name>clarte-utils</name>
+      <address>ssh://git@gitlab.clarte.asso.fr:53000/modules/clarte-utils.git</address>
+      <commitId>b011199</commitId>
+    </DependencyDesc>
+	<DependencyDesc>
+      <name>zed-unity</name>
+      <address>ssh://git@github.com:stereolabs/zed-unity.git</address>
+      <commitId>a22a8f0</commitId>
+    </DependencyDesc>
+	<DependencyDesc>
+      <name>kinectv2-unity</name>
+      <address>ssh://git@gitlab.clarte.asso.fr:53000/lionel/kinectv2-unity.git</address>
+      <commitId>fff1e8d</commitId>
+    </DependencyDesc>
+  </dependencies>
+</DependenciesList>
