@@ -1,0 +1,39 @@
+﻿#include "ProceduralRenderingHelpers.cginc"
+
+#pragma kernel VertexGenerator
+
+
+int DepthWidth;
+int DepthHeight;
+int ColorWidth;
+int ColorHeight;
+float2 SlideUV;
+float4x4 ImagePoseInDepthCoords; // transformation matrix
+float4 DepthIntrinsec; //fx, fy, cx, cy
+float4 ImageIntrinsec; //fx, fy, cx, cy
+
+Texture2D Input_Depth;
+
+RWTexture2D<float4> Output_vertexTexture;
+
+
+[numthreads(8, 8, 1)]
+void VertexGenerator(uint3 id : SV_DispatchThreadID)
+{
+	float depth = Input_Depth[id.xy].r * 0.001;
+
+	// Get results
+	float x = depth * (id.x - DepthIntrinsec.z) / DepthIntrinsec.x;
+	float y = depth * (id.y - DepthIntrinsec.w) / DepthIntrinsec.y;
+	float z = depth;
+
+	float4 xyz_visible = mul(ImagePoseInDepthCoords, float4(x, y, z, 1));
+
+	float u = ((xyz_visible.x * ImageIntrinsec.x / xyz_visible.z) + ImageIntrinsec.z) / (float)ColorWidth;
+	float v = ((xyz_visible.y * ImageIntrinsec.y / xyz_visible.z) + ImageIntrinsec.w) / (float)ColorHeight;
+	float2 uv = float2(u + SlideUV.x, v + SlideUV.y);
+
+	float output_uv = EncodeUV(uv);
+
+	Output_vertexTexture[float2(id.x, DepthHeight - id.y - 1)] = float4(x, -y, z, output_uv);
+}
