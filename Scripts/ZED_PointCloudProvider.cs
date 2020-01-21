@@ -1,4 +1,4 @@
-﻿#if !DISABLE_ZED_SUPPORT
+﻿#if USE_ZED
 using sl;
 using UnityEngine;
 
