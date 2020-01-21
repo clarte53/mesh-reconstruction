@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CamWarp : MonoBehaviour
+public abstract class CamWarp : MonoBehaviour
 {
 	protected struct TrackingData
 	{
@@ -19,19 +19,13 @@ public class CamWarp : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Instance of the ZEDManager interface
-	/// </summary>
-	[SerializeField]
-	protected ZEDManager zedManager = null;
-
-	/// <summary>
 	/// Instance of the OpenVRTracking
 	/// </summary>
 	[SerializeField]
 	protected OpenVRTracking openVRTracking = null;
 
 	[SerializeField]
-	protected Vector3 hmdToZed = new Vector3(-0.0315f, 0, 0.115f);
+	protected Vector3 hmdToCamera = new Vector3(-0.0315f, 0, 0.115f);
 
 	[SerializeField]
 	[Range(0, 100)]
@@ -40,24 +34,8 @@ public class CamWarp : MonoBehaviour
 
 	protected Queue<TrackingData> headPoses = new Queue<TrackingData>();
 
-	protected void OnEnable()
+	protected virtual void OnEnable()
 	{
-		if(zedManager == null)
-		{
-			zedManager = FindObjectOfType<ZEDManager>();
-			if(ZEDManager.GetInstances().Count > 1) //We chose a ZED arbitrarily, but there are multiple cams present. Warn the user. 
-			{
-				Debug.Log("Warning: " + gameObject.name + "'s zedManager was not specified, so the first available ZEDManager instance was " +
-					"assigned. However, there are multiple ZEDManager's in the scene. It's recommended to specify which ZEDManager you want to " +
-					"use to display a point cloud.");
-			}
-		}
-
-		if(zedManager != null)
-		{
-			zedManager.OnGrab += OnGrab;
-		}
-
 		if(openVRTracking == null)
 		{
 			OpenVRTracking[] openVRTrackings = FindObjectsOfType<OpenVRTracking>();
@@ -78,26 +56,23 @@ public class CamWarp : MonoBehaviour
 		}
 	}
 
-	protected void OnDisable()
+	protected virtual void OnDisable()
 	{
-		if(zedManager != null)
-		{
-			zedManager.OnGrab -= OnGrab;
-		}
-
 		if(openVRTracking != null)
 		{
 			openVRTracking.getHeadPose -= OnNewHeadPose;
 		}
 	}
 
-	protected void OnGrab()
+	protected abstract ulong GetImageTimeStamp();
+
+	protected void UpdateMeshPosition()
 	{
-		ulong image_timestamp = zedManager.ImageTimeStamp;
+		ulong image_timestamp = GetImageTimeStamp();
 
 		Matrix4x4 head_pose = GetHeadPose(image_timestamp - communicationTime * 1000000);
 
-		Matrix4x4 offset = Matrix4x4.TRS(hmdToZed, Quaternion.identity, Vector3.one);
+		Matrix4x4 offset = Matrix4x4.TRS(hmdToCamera, Quaternion.identity, Vector3.one);
 
 		Matrix4x4 world_matrix = head_pose * offset;
 
