@@ -55,7 +55,7 @@ public class StructureCore_PointCloudProvider : PointCloudProvider
 
 	public void CreatePointCloud()
 	{
-		Debug.Log("FPS=" + (1000f / (float)sw.ElapsedMilliseconds) + " ms=" + sw.ElapsedMilliseconds);
+		//Debug.Log("FPS=" + (1000f / (float)sw.ElapsedMilliseconds) + " ms=" + sw.ElapsedMilliseconds);
 		sw.Restart();
 
 		if (usingShader != useShader)
