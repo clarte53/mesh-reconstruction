@@ -16,7 +16,7 @@ public class PointCloudRenderer : MonoBehaviour
 	protected Material drawBuffer;
 
 	[SerializeField]
-	protected BoxCollider clippingBox;
+	public BoxCollider clippingBox;
 
 	protected ComputeBuffer vertexBuffer;
 

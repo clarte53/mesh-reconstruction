@@ -7,15 +7,20 @@
       <address>ssh://git@gitlab.clarte.asso.fr:53000/modules/clarte-utils.git</address>
       <commitId>b011199</commitId>
     </DependencyDesc>
-	<DependencyDesc>
+  	<DependencyDesc>
       <name>zed-unity</name>
       <address>ssh://git@github.com:stereolabs/zed-unity.git</address>
       <commitId>a22a8f0</commitId>
     </DependencyDesc>
-	<DependencyDesc>
+	  <DependencyDesc>
       <name>kinectv2-unity</name>
       <address>ssh://git@gitlab.clarte.asso.fr:53000/lionel/kinectv2-unity.git</address>
       <commitId>fff1e8d</commitId>
+    </DependencyDesc>
+    <DependencyDesc>
+      <name>structure-core-net</name>
+      <address>ssh://git@gitlab.clarte.asso.fr:53000/modules/structure-core-net.git</address>
+      <commitId>276e58b7</commitId>
     </DependencyDesc>
   </dependencies>
 </DependenciesList>

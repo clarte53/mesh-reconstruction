@@ -1,4 +1,4 @@
-﻿#if !DISABLE_KINECT_SUPPORT
+﻿#if USE_KINECT
 using CLARTE.Dev.Profiling;
 using System.Threading;
 using UnityEngine;
