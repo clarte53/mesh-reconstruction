@@ -15,8 +15,8 @@ public class MeshedPointCloudRenderer : PointCloudRenderer
 		CLARTE.Dev.Profiling.Profiler.Stop("MeshedPointCloudRenderer");
 	}
 
-	override protected int ComputeVertexBufferMaxSize()
+	override protected Vector3Int ComputeVertexBufferMaxSize()
 	{
-		return (width - 1) * (height - 1) * 2 * 3;
+		return new Vector3Int(width, height, 6);
 	}
 }

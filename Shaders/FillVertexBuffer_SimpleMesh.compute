@@ -5,6 +5,7 @@
 #pragma kernel ClearVertexBuffer_719_1_1
 #pragma kernel ClearVertexBuffer_990_1_1
 #pragma kernel ClearVertexBuffer_741_1_1
+#pragma kernel ClearVertexBuffer_256_4_1
 
 #pragma kernel FillVertexBuffer_512_2_1
 #pragma kernel FillVertexBuffer_256_4_1
@@ -18,6 +19,8 @@
 Texture2D<float4> Input_vertexTexture;
 matrix<float, 4, 4> pointsToClippingBox;
 int width;
+int clear_width;
+int clear_height;
 
 RWStructuredBuffer<Vert> vertexBuffer;
 
@@ -33,7 +36,9 @@ void ClearBuffer(uint3 id)
 
 	vert.uv = float2(0, 0);
 
-	vertexBuffer[id.x] = vert;
+	int index = id.x + id.y * clear_width + id.z * clear_width * clear_height;
+
+	vertexBuffer[index] = vert;
 }
 
 void FillBuffer(uint3 id)
@@ -89,6 +94,11 @@ void ClearVertexBuffer_990_1_1(uint3 id : SV_DispatchThreadID)
 [numthreads(741, 1, 1)]
 void ClearVertexBuffer_741_1_1(uint3 id : SV_DispatchThreadID)
 {
+	ClearBuffer(id);
+}
+
+[numthreads(256, 4, 1)]
+void ClearVertexBuffer_256_4_1(uint3 id : SV_DispatchThreadID) {
 	ClearBuffer(id);
 }
 

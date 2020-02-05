@@ -7,7 +7,7 @@ public class PointCloudRenderer : MonoBehaviour
 {
 	#region Attributes
 	//The size of the buffer that holds the verts.
-	protected int vertexBufferMaxSize = 0;
+	protected Vector3Int vertexBufferMaxSize = Vector3Int.zero;
 
 	[SerializeField]
 	protected ComputeShader vertexBufferGenerator;
@@ -16,7 +16,7 @@ public class PointCloudRenderer : MonoBehaviour
 	protected Material drawBuffer;
 
 	[SerializeField]
-	public BoxCollider clippingBox;
+	protected BoxCollider clippingBox;
 
 	protected ComputeBuffer vertexBuffer;
 
@@ -35,6 +35,10 @@ public class PointCloudRenderer : MonoBehaviour
 	protected int fillBufferKernelId;
 
 	protected Matrix4x4 clippingBoxToPoints;
+	#endregion
+
+	#region Getter/Setters
+	public BoxCollider ClippingBox { get { return clippingBox; } set { clippingBox = value; } }
 	#endregion
 
 	#region MonoBehavior callbacks
@@ -63,7 +67,9 @@ public class PointCloudRenderer : MonoBehaviour
 		}
 
 		vertexBufferGenerator.SetBuffer(clearBufferKernelId, "vertexBuffer", vertexBuffer);
-		vertexBufferGenerator.Dispatch(clearBufferKernelId, vertexBufferMaxSize / clearThreadCount.x, 1, 1);
+		vertexBufferGenerator.SetInt("clear_width", vertexBufferMaxSize.x);
+		vertexBufferGenerator.SetInt("clear_height", vertexBufferMaxSize.y);
+		vertexBufferGenerator.Dispatch(clearBufferKernelId, vertexBufferMaxSize.x / clearThreadCount.x, vertexBufferMaxSize.y / clearThreadCount.y, vertexBufferMaxSize.z / clearThreadCount.z);
 
 		vertexBufferGenerator.SetTexture(fillBufferKernelId, "Input_vertexTexture", provider.VertexTexture);
 		vertexBufferGenerator.SetMatrix("pointsToClippingBox", clippingBoxToPoints);
@@ -84,7 +90,7 @@ public class PointCloudRenderer : MonoBehaviour
 		drawBuffer.SetTexture("_MainTex", provider.ColorTexture);
 		drawBuffer.SetPass(0);
 
-		Graphics.DrawProceduralNow(MeshTopology.Triangles, vertexBufferMaxSize);
+		Graphics.DrawProceduralNow(MeshTopology.Triangles, vertexBufferMaxSize.x * vertexBufferMaxSize.y * vertexBufferMaxSize.z);
 	}
 
 	/// <summary>
@@ -190,9 +196,9 @@ public class PointCloudRenderer : MonoBehaviour
 
 		vertexBufferMaxSize = ComputeVertexBufferMaxSize();
 
-		vertexBuffer = new ComputeBuffer(vertexBufferMaxSize, sizeof(float) * 6); // 4 position, 2 uv
+		vertexBuffer = new ComputeBuffer(vertexBufferMaxSize.x * vertexBufferMaxSize.y * vertexBufferMaxSize.z, sizeof(float) * 6); // 4 position, 2 uv
 
-		clearThreadCount = ComputeThreadCountPerThreadGroup(vertexBufferMaxSize, 1, 1, 1024);
+		clearThreadCount = ComputeThreadCountPerThreadGroup(vertexBufferMaxSize.x, vertexBufferMaxSize.y, vertexBufferMaxSize.z, 1024);
 
 		string clear_buffer_kernel_name = "ClearVertexBuffer_" + clearThreadCount.x + "_" + clearThreadCount.y + "_" + clearThreadCount.z;
 
@@ -205,6 +211,9 @@ public class PointCloudRenderer : MonoBehaviour
 			Debug.LogWarning("Clear buffer kernel not found, falling back to default.");
 
 			clearBufferKernelId = vertexBufferGenerator.FindKernel("ClearVertexBuffer_1_1_1");
+			clearThreadCount.x = 1;
+			clearThreadCount.y = 1;
+			clearThreadCount.z = 1;
 		}
 
 
@@ -222,14 +231,17 @@ public class PointCloudRenderer : MonoBehaviour
 			Debug.LogWarning("Fill buffer kernel not found, falling back to default.");
 
 			fillBufferKernelId = vertexBufferGenerator.FindKernel("FillVertexBuffer_1_1_1");
+			fillThreadCount.x = 1;
+			fillThreadCount.y = 1;
+			fillThreadCount.z = 1;
 		}
 
 		isInitialized = true;
 	}
 
-	virtual protected int ComputeVertexBufferMaxSize()
+	virtual protected Vector3Int ComputeVertexBufferMaxSize()
 	{
-		return 0;
+		return Vector3Int.zero;
 	}
 	#endregion
 }
