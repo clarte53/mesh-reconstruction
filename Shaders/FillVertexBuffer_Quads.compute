@@ -30,7 +30,7 @@ void ClearBuffer(uint3 id)
 
 	vert.uv = float2(0, 0);
 	
-	int index = int index = id.x + id.y * clear_width + id.z * clear_width * clear_height;;
+	int index = id.x + id.y * clear_width + id.z * clear_width * clear_height;
 	
 	vertexBuffer[index] = vert;
 }
