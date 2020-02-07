@@ -9,13 +9,11 @@ public abstract class PointCloudProvider : MonoBehaviour
 	/// <summary>
 	/// RGBAFloat texture storing points positions
 	/// </summary>
-	//public RenderTexture vertexTexture;
 	protected Texture vertexTexture;
 
 	/// <summary>
 	/// RGBAFloat texture storing color map
 	/// </summary>
-	//public RenderTexture colorTexture;
 	protected Texture colorTexture;
 
 	public Texture VertexTexture

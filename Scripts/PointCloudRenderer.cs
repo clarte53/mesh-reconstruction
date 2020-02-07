@@ -42,10 +42,12 @@ public class PointCloudRenderer : MonoBehaviour
 	#endregion
 
 	#region MonoBehavior callbacks
-	protected void Start()
+	protected void Awake()
 	{
 		// Retrieve with provider
 		provider = gameObject.GetComponent<PointCloudProvider>();
+		drawBuffer = Material.Instantiate(drawBuffer);
+		vertexBufferGenerator = ComputeShader.Instantiate(vertexBufferGenerator);
 	}
 
 	virtual protected void Update()
