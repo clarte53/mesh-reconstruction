@@ -22,7 +22,15 @@ public class RgbDepthMap_PointCloudProvider : PointCloudProvider
 		TextureGenerator = ComputeShader.Instantiate(TextureGenerator);
 	}
 
-	public void SetDepthParameters(int width, int height, float fx, float fy, float cx, float cy)
+	public void SetData(PointCloudRgbDepthData pcData)
+	{
+		SetDepthParameters(pcData.depthSize[0], pcData.depthSize[1], pcData.depthIntrinsec[0], pcData.depthIntrinsec[1], pcData.depthIntrinsec[2], pcData.depthIntrinsec[3]);
+		SetImageParameters(pcData.imageSize[0], pcData.imageSize[1], pcData.imageIntrinsec[0], pcData.imageIntrinsec[1], pcData.imageIntrinsec[2], pcData.imageIntrinsec[3]);
+		SetImagePoseInDepthSpace(pcData.imagePoseToDepthCoords);
+		CreatePointCloud(pcData.depthData, pcData.colorData);
+	}
+
+	private void SetDepthParameters(int width, int height, float fx, float fy, float cx, float cy)
 	{
 		depthSize.x = width;
 		depthSize.y = height;
@@ -32,7 +40,7 @@ public class RgbDepthMap_PointCloudProvider : PointCloudProvider
 		depthIntrinsec[3] = cy;
 	}
 
-	public void SetImageParameters(int width, int height, float fx, float fy, float cx, float cy)
+	private void SetImageParameters(int width, int height, float fx, float fy, float cx, float cy)
 	{
 		imageSize.x = width;
 		imageSize.y = height;
@@ -42,7 +50,7 @@ public class RgbDepthMap_PointCloudProvider : PointCloudProvider
 		imageIntrinsec[3] = cy;
 	}
 
-	public void SetImagePoseInDepthSpace(float[] m)
+	private void SetImagePoseInDepthSpace(float[] m)
 	{
 		imagePoseToDepthCoords = new Matrix4x4();
 		imagePoseToDepthCoords.SetRow(0, new Vector4(m[0], m[1], m[2], m[3]));
@@ -51,7 +59,7 @@ public class RgbDepthMap_PointCloudProvider : PointCloudProvider
 		imagePoseToDepthCoords.SetRow(3, new Vector4(m[12], m[13], m[14], m[15]));
 	}
 
-	public void CreatePointCloud(float[] depthData, byte[] imageData)
+	private void CreatePointCloud(float[] depthData, byte[] imageData)
 	{
 		if (vertexTexture == null)
 		{
