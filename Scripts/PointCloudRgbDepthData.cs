@@ -13,6 +13,12 @@ public class PointCloudRgbDepthData
 	public float[] imagePoseToDepthCoords = new float[16];
 	public float[] depthData;
 	public byte[] colorData;
+	public long millisec = 0;
+
+	public PointCloudRgbDepthData()
+	{
+		millisec = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
+	}
 
 #if USE_STRUCTURECORE
 	public void PopulateWithStructureCore()
