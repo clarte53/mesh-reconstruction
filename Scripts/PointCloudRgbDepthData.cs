@@ -1,5 +1,5 @@
-﻿#if USE_STRUCTURECORE
-using System;
+﻿using System;
+#if USE_STRUCTURECORE
 using StructureCoreAPI;
 #endif
 
