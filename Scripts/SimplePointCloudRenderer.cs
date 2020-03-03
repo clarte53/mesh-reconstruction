@@ -15,8 +15,8 @@ public class SimplePointCloudRenderer : PointCloudRenderer
 		base.Update();
 	}
 
-	override protected int ComputeVertexBufferMaxSize()
+	override protected Vector3Int ComputeVertexBufferMaxSize()
 	{
-		return width * height * 6;
+		return new Vector3Int(width, height, 6);
 	}
 }

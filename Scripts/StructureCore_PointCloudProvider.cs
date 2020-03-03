@@ -12,14 +12,14 @@ public class StructureCore_PointCloudProvider : PointCloudProvider
 	bool _isInitialized = false;
 	public bool useShader = false;
 	public bool DepthCorrection = false;
-	public bool flip_x;
-	public bool flip_y;
-	public bool flip_z;
-	public bool flip_r;
-	public bool flip_c;
-	public float slide_u = 0.1f;
-	public float slide_v = 0f;
-	public Texture2D depthTexture;
+	private bool flip_x = false;
+	private bool flip_y = true;
+	private bool flip_z = false;
+	private bool flip_r = true;
+	private bool flip_c = false;
+	public float slide_u = 0.0125f;
+	public float slide_v = -0.005f;
+	private Texture2D depthTexture;
 
 	public ComputeShader TextureGenerator;
 
