@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CLARTE.Geometry.Extensions;
 
 public class SimplePointCloudRenderer : PointCloudRenderer
 {
@@ -11,6 +12,11 @@ public class SimplePointCloudRenderer : PointCloudRenderer
 	override protected void Update()
 	{
 		vertexBufferGenerator.SetFloat("size", size);
+
+		Vector3 dir_x = Camera.main.transform.Right(transform);
+		Vector3 dir_y = Camera.main.transform.Up(transform);
+		vertexBufferGenerator.SetVector("dir_x", dir_x);
+		vertexBufferGenerator.SetVector("dir_y", dir_y);
 
 		base.Update();
 	}

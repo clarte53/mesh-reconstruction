@@ -19,6 +19,7 @@ int clear_height;
 RWStructuredBuffer<Vert> vertexBuffer;
 
 float size;
+float3 dir_x, dir_y;
 
 void ClearBuffer(uint3 id)
 {
@@ -46,10 +47,10 @@ void FillBuffer(uint3 id)
 		return;
 	}
 
-	float4 p1 = p + size * float4(-0.5, 0.5, 0, 1);
-	float4 p2 = p + size * float4(0.5, 0.5, 0, 1);
-	float4 p3 = p + size * float4(-0.5, -0.5, 0, 1);
-	float4 p4 = p + size * float4(0.5, -0.5, 0, 1);
+	float4 p1 = p + size * float4(-dir_x + dir_y, 1);
+	float4 p2 = p + size * float4( dir_x + dir_y, 1);
+	float4 p3 = p + size * float4(-dir_x - dir_y, 1);
+	float4 p4 = p + size * float4( dir_x - dir_y, 1);
 
 	int index = id.x + id.y * width;
 
