@@ -18,6 +18,10 @@ public class PointCloudRenderer : MonoBehaviour
 	[SerializeField]
 	protected BoxCollider clippingBox;
 
+	// Whether the point cloud to braw is static or continuously updated
+	[SerializeField]
+	protected bool isStatic;
+
 	protected ComputeBuffer vertexBuffer;
 
 	protected PointCloudProvider provider;
@@ -66,19 +70,16 @@ public class PointCloudRenderer : MonoBehaviour
 		if(!isInitialized)
 		{
 			Initialize(provider.VertexTexture);
+
+			UpdateVertexBuffer();
 		}
-
-		vertexBufferGenerator.SetBuffer(clearBufferKernelId, "vertexBuffer", vertexBuffer);
-		vertexBufferGenerator.SetInt("clear_width", vertexBufferMaxSize.x);
-		vertexBufferGenerator.SetInt("clear_height", vertexBufferMaxSize.y);
-		vertexBufferGenerator.Dispatch(clearBufferKernelId, vertexBufferMaxSize.x / clearThreadCount.x, vertexBufferMaxSize.y / clearThreadCount.y, vertexBufferMaxSize.z / clearThreadCount.z);
-
-		vertexBufferGenerator.SetTexture(fillBufferKernelId, "Input_vertexTexture", provider.VertexTexture);
-		vertexBufferGenerator.SetMatrix("pointsToClippingBox", clippingBoxToPoints);
-		vertexBufferGenerator.SetInt("width", width);
-		vertexBufferGenerator.SetBuffer(fillBufferKernelId, "vertexBuffer", vertexBuffer);
-
-		vertexBufferGenerator.Dispatch(fillBufferKernelId, provider.VertexTexture.width / fillThreadCount.x, provider.VertexTexture.height / fillThreadCount.y, 1);
+		else
+		{
+			if(!isStatic)
+			{
+				UpdateVertexBuffer();
+			}
+		}
 	}
 
 	/// <summary>
@@ -239,6 +240,20 @@ public class PointCloudRenderer : MonoBehaviour
 		}
 
 		isInitialized = true;
+	}
+
+	protected void UpdateVertexBuffer()
+	{
+		vertexBufferGenerator.SetBuffer(clearBufferKernelId, "vertexBuffer", vertexBuffer);
+		vertexBufferGenerator.SetInt("clear_width", vertexBufferMaxSize.x);
+		vertexBufferGenerator.SetInt("clear_height", vertexBufferMaxSize.y);
+		vertexBufferGenerator.Dispatch(clearBufferKernelId, vertexBufferMaxSize.x / clearThreadCount.x, vertexBufferMaxSize.y / clearThreadCount.y, vertexBufferMaxSize.z / clearThreadCount.z);
+
+		vertexBufferGenerator.SetTexture(fillBufferKernelId, "Input_vertexTexture", provider.VertexTexture);
+		vertexBufferGenerator.SetMatrix("pointsToClippingBox", clippingBoxToPoints);
+		vertexBufferGenerator.SetInt("width", width);
+		vertexBufferGenerator.SetBuffer(fillBufferKernelId, "vertexBuffer", vertexBuffer);
+		vertexBufferGenerator.Dispatch(fillBufferKernelId, provider.VertexTexture.width / fillThreadCount.x, provider.VertexTexture.height / fillThreadCount.y, 1);
 	}
 
 	virtual protected Vector3Int ComputeVertexBufferMaxSize()
