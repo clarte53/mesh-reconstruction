@@ -254,6 +254,7 @@ public class Kinect_PointCloudProvider : PointCloudProvider
 				vertexRenderTexture = new RenderTexture(KinectDepthMapWidth, KinectDepthMapHeight, 0, RenderTextureFormat.ARGBFloat);
 				vertexRenderTexture.enableRandomWrite = true;
 				vertexRenderTexture.useMipMap = false;
+				vertexRenderTexture.filterMode = FilterMode.Point;
 				vertexRenderTexture.Create();
 
 				vertexTexture = (Texture)vertexRenderTexture;

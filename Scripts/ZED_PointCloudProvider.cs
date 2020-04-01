@@ -95,6 +95,7 @@ public class ZED_PointCloudProvider : PointCloudProvider
 			vertexRenderTexture = new RenderTexture(XYZTexture.width, XYZTexture.height, 0, RenderTextureFormat.ARGBFloat);
 			vertexRenderTexture.enableRandomWrite = true;
 			vertexRenderTexture.useMipMap = false;
+			vertexRenderTexture.filterMode = FilterMode.Point;
 			vertexRenderTexture.Create();
 
 			vertexTexture = (Texture)vertexRenderTexture;
