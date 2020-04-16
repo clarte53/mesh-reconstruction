@@ -171,6 +171,7 @@ MonoBehaviour:
     type: 3}
   drawBuffer: {fileID: 2100000, guid: 9972fd133c51e4a4aa4025c3a1fab5b6, type: 2}
   clippingBox: {fileID: 844131550}
+  isStatic: 0
   size: 0.005
 --- !u!114 &177039653
 MonoBehaviour:
@@ -188,6 +189,7 @@ MonoBehaviour:
     type: 3}
   drawBuffer: {fileID: 2100000, guid: 9972fd133c51e4a4aa4025c3a1fab5b6, type: 2}
   clippingBox: {fileID: 844131550}
+  isStatic: 0
   maxEdgeLength: 0.02
 --- !u!4 &177039654
 Transform:
@@ -225,13 +227,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 177039650}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32d1773ea0e7e3b43be219ece42627c7, type: 3}
+  m_Script: {fileID: 11500000, guid: 99d304003d971f44cab096e132f8fe6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zedManager: {fileID: 0}
-  openVRTracking: {fileID: 0}
-  hmdToZed: {x: -0.0315, y: 0, z: 0.115}
+  openVRTracking: {fileID: 177039655}
+  hmdToCamera: {x: -0.0315, y: 0, z: 0.115}
   communicationTime: 0
+  zedManager: {fileID: 866503055}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -553,6 +555,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
+--- !u!114 &866503055 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+    type: 3}
+  m_PrefabInstance: {fileID: 866503054}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,6 +700,7 @@ MonoBehaviour:
     type: 3}
   drawBuffer: {fileID: 2100000, guid: 9972fd133c51e4a4aa4025c3a1fab5b6, type: 2}
   clippingBox: {fileID: 844131550}
+  isStatic: 0
   maxEdgeLength: 0.02
 --- !u!114 &1382825109
 MonoBehaviour:
@@ -703,6 +718,7 @@ MonoBehaviour:
     type: 3}
   drawBuffer: {fileID: 2100000, guid: 9972fd133c51e4a4aa4025c3a1fab5b6, type: 2}
   clippingBox: {fileID: 844131550}
+  isStatic: 0
   size: 0.005
 --- !u!114 &1382825110
 MonoBehaviour:

@@ -4,7 +4,7 @@
   <dependencies>
     <DependencyDesc>
       <name>clarte-utils</name>
-      <address>ssh://git@gitlab.clarte.asso.fr:53000/modules/clarte-utils.git</address>
+      <address>ssh://git@github.com:clarte53/clarte-utils.git</address>
       <commitId>b011199</commitId>
     </DependencyDesc>
   	<DependencyDesc>
@@ -14,7 +14,7 @@
     </DependencyDesc>
 	  <DependencyDesc>
       <name>kinectv2-unity</name>
-      <address>ssh://git@gitlab.clarte.asso.fr:53000/lionel/kinectv2-unity.git</address>
+      <address>ssh://git@github.com:clarte53/kinectv2-unity.git</address>
       <commitId>fff1e8d</commitId>
     </DependencyDesc>
     <DependencyDesc>

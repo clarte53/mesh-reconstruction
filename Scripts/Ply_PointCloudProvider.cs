@@ -1,3 +1,4 @@
+#if USE_PLY
 // Adapted from
 // Pcx - Point cloud importer & renderer for Unity
 // https://github.com/keijiro/Pcx
@@ -338,8 +339,5 @@ namespace Pcx
 		}
 		#endregion
 	}
-
-
-
-
 }
+#endif

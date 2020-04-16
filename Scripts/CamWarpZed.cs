@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CamWrapZed : CamWarp
+public class CamWarpZed : CamWarp
 {
 	/// <summary>
 	/// Instance of the ZEDManager interface
