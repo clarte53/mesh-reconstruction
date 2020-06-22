@@ -13,10 +13,13 @@ public class SimplePointCloudRenderer : PointCloudRenderer
 	{
 		vertexBufferGenerator.SetFloat("size", size);
 
-		Vector3 dir_x = Camera.main.transform.Right(transform);
-		Vector3 dir_y = Camera.main.transform.Up(transform);
-		vertexBufferGenerator.SetVector("dir_x", dir_x);
-		vertexBufferGenerator.SetVector("dir_y", dir_y);
+		if (Camera.main != null)
+		{
+			Vector3 dir_x = Camera.main.transform.Right(transform);
+			Vector3 dir_y = Camera.main.transform.Up(transform);
+			vertexBufferGenerator.SetVector("dir_x", dir_x);
+			vertexBufferGenerator.SetVector("dir_y", dir_y);
+		}
 
 		base.Update();
 	}
