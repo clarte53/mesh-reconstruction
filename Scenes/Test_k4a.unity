@@ -237,7 +237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vertexTexture: {fileID: 0}
   colorTexture: {fileID: 0}
-  TextureGenerator: {fileID: 7200000, guid: e21ea5d3baf9a6a42b86dc86867d5d99, type: 3}
+  TextureGenerator: {fileID: 7200000, guid: 63c5f52e1343caf48bc0bad38e519914, type: 3}
 --- !u!4 &349805882
 Transform:
   m_ObjectHideFlags: 0

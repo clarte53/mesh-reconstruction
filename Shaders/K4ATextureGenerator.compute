@@ -22,15 +22,14 @@ RWTexture2D<float4> Output_colorTexture;
 void VertexGenerator(uint3 id : SV_DispatchThreadID)
 {
 	//int index = depthWidth * id.y + id.x;
-	int index = depthWidth * (depthHeight - id.y) + (depthWidth -id.x);
+	int index = depthWidth * (depthHeight - id.y) + (depthWidth - id.x);
 
 	// Get results
 	float output_x = -Input_positionData[index].x;
 	float output_y = Input_positionData[index].y;
 	float output_z = Input_positionData[index].z;
 
-	//float2 uv = float2(Input_uvData[index].x / (float)colorWidth, Input_uvData[index].y / (float)colorHeight);
-	float2 uv = float2(0, 0);
+	float2 uv = float2(Input_uvData[index].x / (float)depthWidth, Input_uvData[index].y / (float)depthHeight);
 	uv.y = 1.0 - uv.y;
 	uv.x = 1.0 - uv.x;
 
