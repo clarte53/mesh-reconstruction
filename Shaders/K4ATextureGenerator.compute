@@ -4,14 +4,16 @@
 // One kernel to Generate ColorTexture from kinect data
 #pragma kernel VertexGenerator
 #pragma kernel ColorGenerator
+#pragma enable_d3d11_debug_symbols
 
 int depthWidth;
 int depthHeight;
 int colorWidth;
 int colorHeight;
-StructuredBuffer<float3> Input_positionData;
+StructuredBuffer<int> Input_positionData;
+//StructuredBuffer<float3> Input_positionData;
 StructuredBuffer<uint> Input_colorData;
-StructuredBuffer<float2> Input_uvData;
+
 
 RWTexture2D<float4> Output_vertexTexture;
 RWTexture2D<float4> Output_colorTexture;
@@ -24,19 +26,67 @@ void VertexGenerator(uint3 id : SV_DispatchThreadID)
 	//int index = depthWidth * id.y + id.x;
 	int index = depthWidth * (depthHeight - id.y) + (depthWidth - id.x);
 
-	// Get results
-	float output_x = -Input_positionData[index].x;
-	float output_y = Input_positionData[index].y;
-	float output_z = Input_positionData[index].z;
+	half output_x;
+	half output_y;
+	half output_z;
 
-	float2 uv = float2(Input_uvData[index].x / (float)depthWidth, Input_uvData[index].y / (float)depthHeight);
+	int group_base = floor(index / 2);
+	if (fmod(index, 2) == 0) {
+		int firstInt = Input_positionData[group_base * 3];
+		int secondInt = Input_positionData[group_base * 3 + 1];
+		output_x = (firstInt >> 0) & 0xffff;
+		output_y = (firstInt >> 16) & 0xffff;
+		output_z = (secondInt >> 0) & 0xffff;
+	}
+	else {
+		int firstInt = Input_positionData[group_base * 3 + 1];
+		int secondInt = Input_positionData[group_base * 3 + 2];
+		output_x = (firstInt >> 16) & 0xffff;
+		output_y = (secondInt >> 0) & 0xffff;
+		output_z = (secondInt >> 16) & 0xffff;
+	}
+	
+	output_x = output_x *0.001;
+	output_y = output_y *0.001;
+	output_z = output_z *0.001;
+
+	// Get results
+	/*float output_x = -Input_positionData[index].x;
+	float output_y = Input_positionData[index].y;
+	float output_z = Input_positionData[index].z;*/
+
+	/*float output_x = -Input_positionData[index] * 0.001;
+	float output_y = Input_positionData[index + (depthHeight * depthWidth)] * 0.001;
+	float output_z = Input_positionData[[index + (depthHeight * depthWidth * 2)] * 0.001;*/
+
+	/*float output_x = -Input_positionData[index * 3] * 0.001;
+	float output_y = -Input_positionData[index * 3 + 1] * 0.001;
+	float output_z = -Input_positionData[index * 3 + 2] * 0.001;*/
+
+	
+
+	/*float output_x = 0;
+	if (Input_positionData[index * 3] * 0.001 > 0) {
+		output_x = id.x / depthWidth;
+	}
+	float output_y = 0;
+	if (-Input_positionData[index * 3 + 1] * 0.001 > 0) {
+		output_y = id.y / depthHeight;
+	}
+	float output_z = 0; 
+	if (Input_positionData[index * 3 + 2] * 0.001 > 0) {
+		output_z = Input_positionData[index * 3 + 2];
+	}*/
+
+	float2 uv = float2((depthWidth - id.x) / (float)depthWidth, (depthHeight - id.y) / (float)depthHeight);
 	uv.y = 1.0 - uv.y;
 	uv.x = 1.0 - uv.x;
 
 	float output_uv = EncodeUV(uv);
 
 	// Fill rendertexture
-	Output_vertexTexture[id.xy] = float4(output_x, output_y, output_z, output_uv);
+	Output_vertexTexture[id.xy] = float4((float)output_x, (float)output_y, (float)output_z, output_uv);
+	//Output_vertexTexture[id.xy] = float4(output_x, 0, 0, output_uv);
 }
 
 [numthreads(1, 1, 1)]
