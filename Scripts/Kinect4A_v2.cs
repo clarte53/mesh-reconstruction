@@ -9,29 +9,21 @@ using Windows.Kinect;
 public class Kinect4A_v2 : PointCloudProvider
 {
     public ComputeShader TextureGenerator;
+    //Variable for handling Kinect
+    private Device kinect;
+    //Number of all points of PointCloud 
+    private int depthWidth;
+    private int depthHeight;
+
+    private byte[] vertices;
+    private BGRA[] colors;
+
+    //Class for coordinate transformation(e.g.Color-to-depth, depth-to-xyz, etc.)
+    private Transformation transformation;
 
     private ComputeBuffer inputPositionBuffer;
     private ComputeBuffer inputColorBuffer;
-    //Variable for handling Kinect
 
-    Device kinect;
-    //Number of all points of PointCloud 
-    int depthWidth;
-    int depthHeight;
-  
-    //Used to draw a set of points
-    Mesh mesh;
-    //Array of coordinates for each point in PointCloud
-    Vector3[] vertices;
-    Color[] testArray;
-    byte[] vs;
-    //Array of colors corresponding to each point in PointCloud
-    BGRA[] colors;
-    public Texture2D tex;
-    public Renderer quad;
-
-    //Class for coordinate transformation(e.g.Color-to-depth, depth-to-xyz, etc.)
-    Transformation transformation;
     protected RenderTexture vertexRenderTexture;
     protected RenderTexture colorRenderTexture;
 
@@ -48,32 +40,25 @@ public class Kinect4A_v2 : PointCloudProvider
 
     private void Update()
     {
+        Profiler.Start("kinect capture");
         Capture capture = kinect.GetCapture();
+        Profiler.Stop("kinect capture");
 
         //Getting color information
+        Profiler.Start("Image array assignment");
         Image colorImage = transformation.ColorImageToDepthCamera(capture);
         colors = colorImage.GetPixels<BGRA>().ToArray();
+        Profiler.Stop("Image array assignment");
 
         //Getting vertices of point cloud
+        Profiler.Start("Position bytes assignment");
         Image xyzImage = transformation.DepthImageToPointCloud(capture.Depth);
-        Short3[] xyzArray = xyzImage.GetPixels<Short3>().ToArray();
-        xyzImage.CopyBytesTo(vs, 0, 0, vs.Length);
+        xyzImage.CopyBytesTo(vertices, 0, 0, vertices.Length);
+        Profiler.Stop("Position bytes assignment");
 
-        for (int i = 0; i < depthWidth * depthHeight; i++)
-        {
-            vertices[i].x = xyzArray[i].X * 0.001f;
-            vertices[i].y = -xyzArray[i].Y * 0.001f;
-            vertices[i].z = xyzArray[i].Z * 0.001f;
-
-            //int r = BitConverter.ToInt16(new byte[2] { vs[6 * i], vs[6 * i + 1] }, 0);
-            //int g = BitConverter.ToInt16(new byte[2] { vs[6 * i + 2], vs[6 * i + 3] }, 0);
-            //int b = BitConverter.ToInt16(new byte[2] { vs[6 * i + 4], vs[6 * i + 5] }, 0);
-
-            //testArray[i] = new Color(r * 0.001f, g * 0.001f, b * 0.001f);
-        }
-
+        Profiler.Start("PointCloud computation");
         ComputePointCloudData();
-        quad.material.mainTexture = vertexTexture;
+        Profiler.Stop("PointCloud computation");
     }
 
     public static Vector3 ShortToVector(Short3 sh)
@@ -115,16 +100,10 @@ public class Kinect4A_v2 : PointCloudProvider
     //Prepare to draw point cloud.
     private void InitValues()
     {
-        //Get the width and height of the Depth image and calculate the number of all points
         depthWidth = kinect.GetCalibration().DepthCameraCalibration.ResolutionWidth;
         depthHeight = kinect.GetCalibration().DepthCameraCalibration.ResolutionHeight;
-        int num = depthWidth * depthHeight;
-
-        //Allocation of vertex and color storage space for the total number of pixels in the depth image
-        vertices = new Vector3[depthWidth * depthHeight];
-        vs = new byte[depthWidth * depthHeight * 3 * 2]; // short3 = 3 * 2byte
-        testArray = new Color[depthWidth * depthHeight];
-        tex = new Texture2D(depthWidth, depthHeight);
+        
+        vertices = new byte[depthWidth * depthHeight * 3 * 2]; // short3 = 3 * 2byte
     }
     
     private void ComputePointCloudData()
@@ -167,7 +146,7 @@ public class Kinect4A_v2 : PointCloudProvider
         // Vertex generator
         vertexTextureGeneratorKernelId = TextureGenerator.FindKernel("VertexGenerator");
         TextureGenerator.SetBuffer(vertexTextureGeneratorKernelId, "Input_positionData", inputPositionBuffer);
-        inputPositionBuffer.SetData(vs);
+        inputPositionBuffer.SetData(vertices);
         //inputPositionBuffer.SetData(vertices);
 
         TextureGenerator.SetInt("depthWidth", depthWidth);
@@ -184,16 +163,5 @@ public class Kinect4A_v2 : PointCloudProvider
         TextureGenerator.SetTexture(colorTextureGeneratorKernelId, "Output_colorTexture", colorTexture);
         TextureGenerator.Dispatch(vertexTextureGeneratorKernelId, depthWidth, depthHeight, 1);
         TextureGenerator.Dispatch(colorTextureGeneratorKernelId, depthWidth, depthHeight, 1);
-    }
-
-    float EncodeUV(Vector2 uv)
-    {
-        //quantize from 0-1 floats, to 0-65535 integers, which can be represented in 16 bits
-        uint u = (uint)Mathf.Round(uv.x * 65535.0f);
-        uint v = (uint)Mathf.Round(uv.y * 65535.0f);
-
-        uint encoded = u << 16 | v;
-
-        return (float)encoded;
     }
 }
