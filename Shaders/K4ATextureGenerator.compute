@@ -20,7 +20,7 @@ RWTexture2D<float4> Output_colorTexture;
 
 
 
-[numthreads(1, 1, 1)]
+[numthreads(64, 16, 1)]
 void VertexGenerator(uint3 id : SV_DispatchThreadID)
 {
 	int index = depthWidth * (depthHeight - id.y) + (depthWidth - id.x);
@@ -66,7 +66,7 @@ void VertexGenerator(uint3 id : SV_DispatchThreadID)
 	Output_vertexTexture[id.xy] = float4(ox, oy, oz, output_uv);
 }
 
-[numthreads(1, 1, 1)]
+[numthreads(64, 16, 1)]
 void ColorGenerator(uint3 id : SV_DispatchThreadID)
 {
 	//int index = colorWidth * id.y + id.x;
