@@ -217,6 +217,7 @@ GameObject:
   - component: {fileID: 349805881}
   - component: {fileID: 349805884}
   - component: {fileID: 349805883}
+  - component: {fileID: 349805885}
   m_Layer: 0
   m_Name: Point Cloud
   m_TagString: Untagged
@@ -276,7 +277,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 349805880}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9f4f54b2b6469d2428d6c4e59645ddfa, type: 3}
   m_Name: 
@@ -287,6 +288,24 @@ MonoBehaviour:
   clippingBox: {fileID: 349805883}
   isStatic: 0
   size: 0.001
+--- !u!114 &349805885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349805880}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1441330b36538e54685d937d8a2fb696, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vertexBufferGenerator: {fileID: 7200000, guid: a733869e263f0a543b093c441ba1894f,
+    type: 3}
+  drawBuffer: {fileID: 2100000, guid: 9972fd133c51e4a4aa4025c3a1fab5b6, type: 2}
+  clippingBox: {fileID: 349805883}
+  isStatic: 0
+  maxEdgeLength: 0.05
 --- !u!1 &735303196
 GameObject:
   m_ObjectHideFlags: 0
