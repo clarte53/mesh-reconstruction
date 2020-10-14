@@ -12,10 +12,20 @@ public class Kinect4AManager : MonoBehaviour
     public bool _synchronizedImagesOnly = true;
     public FPS _cameraFPS = FPS.FPS30;
 
-    public Device kinect { get; private set; }
+    private Device kinect;
     private int deviceID = 0;
     private bool kinectIsOn = false;
     
+    public Device GetKinect()
+    {
+        if(!kinectIsOn)
+        {
+            return null;
+        } else
+        {
+            return kinect;
+        }
+    }
     public void StartCamera()
     {
         if(!kinectIsOn)
@@ -38,9 +48,10 @@ public class Kinect4AManager : MonoBehaviour
     {
         if(kinectIsOn)
         {
-            kinect.StopCameras();
-            kinect.Dispose();
             kinectIsOn = false;
+            kinect.StopCameras();
+            kinect = null;
+            
         }
     }
 }

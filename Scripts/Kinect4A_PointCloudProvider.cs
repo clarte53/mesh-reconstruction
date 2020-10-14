@@ -99,7 +99,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
     private void InitKinect()
     {
         kinectManager.StartCamera();
-        kinect = kinectManager.kinect;
+        kinect = kinectManager.GetKinect();
         //Access to coordinate transformation information
         transformation = kinect.GetCalibration().CreateTransformation();
     }
