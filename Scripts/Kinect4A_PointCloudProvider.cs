@@ -5,7 +5,7 @@ using UnityEngine;
 using Microsoft.Azure.Kinect.Sensor;
 using CLARTE.Dev.Profiling;
 using System.Threading.Tasks;
-using Windows.Kinect;
+//using Windows.Kinect;
 using System.Threading;
 
 public class Kinect4A_PointCloudProvider : PointCloudProvider
@@ -13,12 +13,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
     #region Public Variables
     public ComputeShader TextureGenerator;
 
-    [Header("Camera settings")]
-    public ImageFormat _imageFormat = ImageFormat.ColorBGRA32;
-    public ColorResolution _colorResolution = ColorResolution.R720p;
-    public DepthMode _depthMode = DepthMode.NFOV_Unbinned;
-    public bool _synchronizedImagesOnly = true;
-    public FPS _cameraFPS = FPS.FPS30;
+    public Kinect4AManager kinectManager;
     #endregion
 
     #region Private Variables
@@ -95,7 +90,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
     //Stop Kinect as soon as this object disappear
     private void OnDestroy()
     {
-        kinect.StopCameras();
+        kinectManager.StopCamera();
     }
     #endregion
 
@@ -103,18 +98,8 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
     //Initialization of Kinect
     private void InitKinect()
     {
-        //Connect with the 0th Kinect
-        kinect = Device.Open(0);
-
-        //Setting the Kinect operation mode and starting it
-        kinect.StartCameras(new DeviceConfiguration
-        {
-            ColorFormat = _imageFormat,
-            ColorResolution = _colorResolution,
-            DepthMode = _depthMode,
-            SynchronizedImagesOnly = _synchronizedImagesOnly,
-            CameraFPS = _cameraFPS
-        });
+        kinectManager.StartCamera();
+        kinect = kinectManager.kinect;
         //Access to coordinate transformation information
         transformation = kinect.GetCalibration().CreateTransformation();
     }
@@ -183,7 +168,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         chrono.Start();
 
         double dt;
-        switch (_cameraFPS)
+        switch (kinectManager._cameraFPS)
         {
             case FPS.FPS15:
                 dt = 1 / 15;
