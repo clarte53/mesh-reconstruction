@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Kinect4AManager : MonoBehaviour
 {
+    // This class centralizes the different calls to kinect so the device is only opened and closed once
+    #region Members
     [Header("Camera settings")]
     public ImageFormat _imageFormat = ImageFormat.ColorBGRA32;
     public ColorResolution _colorResolution = ColorResolution.R720p;
@@ -15,20 +17,29 @@ public class Kinect4AManager : MonoBehaviour
     private Device kinect;
     private int deviceID = 0;
     private bool kinectIsOn = false;
-    
+    #endregion
+
+    #region Getter
     public Device GetKinect()
     {
-        if(!kinectIsOn)
+        if (!kinectIsOn)
         {
             return null;
-        } else
+        }
+        else
         {
             return kinect;
         }
     }
+    #endregion
+
+    #region public methods
+    /// <summary>
+    /// Open kinect if it has not been done already 
+    /// </summary>
     public void StartCamera()
     {
-        if(!kinectIsOn)
+        if (!kinectIsOn)
         {
             DeviceConfiguration deviceConfiguration = new DeviceConfiguration
             {
@@ -44,14 +55,17 @@ public class Kinect4AManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Stop kinect if it has not been done already
+    /// </summary>
     public void StopCamera()
     {
-        if(kinectIsOn)
+        if (kinectIsOn)
         {
             kinectIsOn = false;
             kinect.StopCameras();
             kinect = null;
-            
         }
     }
+    #endregion 
 }

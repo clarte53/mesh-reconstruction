@@ -5,7 +5,7 @@ using CLARTE.Geometry.Extensions;
 
 public class SimplePointCloudRenderer : PointCloudRenderer
 {
-	[Range(0.001f, 0.3f)]
+	[Range(0.0001f, 0.3f)]
 	[SerializeField]
 	float size = 0.05f;
 
