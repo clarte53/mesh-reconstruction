@@ -17,6 +17,11 @@
       <address>ssh://git@github.com:clarte53/kinectv2-unity.git</address>
       <commitId>fff1e8d</commitId>
     </DependencyDesc>
+	<DependencyDesc>
+      <name>kinect4a-unity</name>
+      <address>ssh://git@gitlab.clarte.asso.fr:53000/projets-collaboratifs/lobbybot/kinect4a-unity.git</address>
+      <commitId>7bc1bee3</commitId>
+    </DependencyDesc>
     <DependencyDesc>
       <name>structure-core-net</name>
       <address>ssh://git@gitlab.clarte.asso.fr:53000/modules/structure-core-net.git</address>

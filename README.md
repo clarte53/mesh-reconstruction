@@ -10,10 +10,11 @@ repository must be cloned into your Unity project as submodules inside the "Asse
 Similarly, required sources must be cloned in the "Assets" folder as well. The following sources are currently supported:
 - [Zed/ZedMini](https://github.com/stereolabs/zed-unity)
 - [Kinect v2](https://github.com/clarte53/kinectv2-unity)
+- [Kinect 4A](https://gitlab.clarte.asso.fr/projets-collaboratifs/lobbybot/kinect4a-unity)
 
 The only exception is the PLY file loader that does not require any dependency.
 
-Then to enable a source it should be activated by adding USE_[source_name] to the scripting define symbols. Currently supported flags are USE_ZED, USE_KINECT, and USE_PLY.
+Then to enable a source it should be activated by adding USE_[source_name] to the scripting define symbols. Currently supported flags are USE_ZED, USE_KINECT, USE_K4A and USE_PLY.
 
 In the case of a head-mounted RGBD camera, a [Camera Time Warping](https://ieeexplore.ieee.org/document/8699171) algoritm has been implemented. To achieve good results, head tracking sampling has to be performed at high frequency, which is not possible within Unity. Therefore an external process is required to allow for such high-freq sampling and then feed the Unity module. This process can be built from [this](https://github.com/clarte53/openvr-tracking) repo (commit bfe4ac1, others not tested). Pre-built binaries are available from the [Release](https://github.com/clarte53/openvr-tracking/releases/tag/0.1) tab. The executable is expected in the same folder as the calling application (or in the project folder for use in the Editor) and to be named 'openvr-tracking.exe'.
 
