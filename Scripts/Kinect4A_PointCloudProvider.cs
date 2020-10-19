@@ -83,7 +83,8 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
 
         vertexRenderTexture.Release();
         colorRenderTexture.Release();
-        
+
+        Profiler.DisplayAllAverages();
         LogInFile.DumpAllLogs();
     }
 
@@ -139,7 +140,10 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         {
             lock (vertices)
             {
-                xyzImage.CopyBytesTo(vertices, 0, 0, vertices.Length);
+                Profiler.Start("Memory to Array");
+                vertices = xyzImage.Memory.ToArray();
+                Profiler.Stop("Memory to Array");
+                //xyzImage.CopyBytesTo(vertices, 0, 0, vertices.Length);
             }
             xyzImage.Dispose();
         }
