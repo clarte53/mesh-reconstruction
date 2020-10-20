@@ -17,8 +17,6 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
     #endregion
 
     #region Private Variables
-    //Variable for handling Kinect
-    private Device kinect;
     private bool isInitialized = false;
     //Number of all points of PointCloud 
     private int depthWidth;
@@ -51,7 +49,6 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         if (!isInitialized)
         {
             InitKinect();
-            InitValues();
 
             captureThread = new Thread(UpdateKinectData);
             captureThread.Start();
@@ -78,13 +75,24 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
             captureThread.Join();
         }
 
-        inputPositionBuffer.Dispose();
-        inputColorBuffer.Dispose();
+        if(inputPositionBuffer != null)
+        {
+            inputPositionBuffer.Dispose();
+        }
+        if(inputColorBuffer != null)
+        {
+            inputColorBuffer.Dispose();
+        }    
+        if(vertexRenderTexture != null)
+        {
+            vertexRenderTexture.Release();
+        }
+        if(colorRenderTexture != null)
+        {
+            colorRenderTexture.Release();
+        }
 
-        vertexRenderTexture.Release();
-        colorRenderTexture.Release();
-
-        Profiler.DisplayAllAverages();
+        //Profiler.DisplayAllAverages();
         LogInFile.DumpAllLogs();
     }
 
@@ -100,9 +108,9 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
     private void InitKinect()
     {
         kinectManager.StartCamera();
-        kinect = kinectManager.GetKinect();
         //Access to coordinate transformation information
-        transformation = kinect.GetCalibration().CreateTransformation();
+        transformation = kinectManager.GetTransformation();
+        InitValues();
     }
 
     public Short3[] GetPointCloud()
@@ -125,8 +133,8 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
     //Prepare to draw point cloud.
     private void InitValues()
     {
-        depthWidth = kinect.GetCalibration().DepthCameraCalibration.ResolutionWidth;
-        depthHeight = kinect.GetCalibration().DepthCameraCalibration.ResolutionHeight;
+        depthWidth = kinectManager.GetCalibration().DepthCameraCalibration.ResolutionWidth;
+        depthHeight = kinectManager.GetCalibration().DepthCameraCalibration.ResolutionHeight;
 
         vertices = new byte[depthWidth * depthHeight * 3 * 2]; // short3 = 3 * 2byte
         colors = new BGRA[depthWidth * depthHeight];
@@ -140,9 +148,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         {
             lock (vertices)
             {
-                Profiler.Start("Memory to Array");
                 vertices = xyzImage.Memory.ToArray();
-                Profiler.Stop("Memory to Array");
                 //xyzImage.CopyBytesTo(vertices, 0, 0, vertices.Length);
             }
             xyzImage.Dispose();
@@ -161,7 +167,6 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
             }
             colorImage.Dispose();
         }
-
     }
 
     private void UpdateKinectData()
@@ -197,7 +202,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
             {
                 next_schedule += dt;
 
-                Capture capture = kinect.GetCapture();
+                Capture capture = kinectManager.GetCapture();
                 if (capture != null)
                 {
                     UpdateDepthData(capture);
