@@ -12,11 +12,10 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
 {
     #region Public Variables
     public ComputeShader TextureGenerator;
-
-    public Kinect4AManager kinectManager;
     #endregion
 
     #region Private Variables
+    private Kinect4AManager kinectManager;
     private bool isInitialized = false;
     //Number of all points of PointCloud 
     private int depthWidth;
@@ -107,6 +106,11 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
     //Initialization of Kinect
     private void InitKinect()
     {
+        kinectManager = FindObjectOfType<Kinect4AManager>();
+        if (kinectManager == null)
+        {
+            Debug.LogError("Could not find object of type Kinect4AManager, please add one to your scene");
+        }
         kinectManager.StartCamera();
         //Access to coordinate transformation information
         transformation = kinectManager.GetTransformation();
