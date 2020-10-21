@@ -1,12 +1,9 @@
 ﻿#if USE_K4A
-using System;
-using System.Collections.Generic;
 using UnityEngine;
-using Microsoft.Azure.Kinect.Sensor;
+using K4AdotNet.Sensor;
 using CLARTE.Dev.Profiling;
-using System.Threading.Tasks;
-//using Windows.Kinect;
 using System.Threading;
+using K4AdotNet.Samples.Unity;
 
 public class Kinect4A_PointCloudProvider : PointCloudProvider
 {
@@ -16,18 +13,22 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
 
     #region Private Variables
     private Kinect4AManager kinectManager;
+    
     private bool isInitialized = false;
-    //Number of all points of PointCloud 
+
+    // Values for data storage
     private int depthWidth;
     private int depthHeight;
 
     private byte[] vertices;
-    private BGRA[] colors;
-
+    private byte[] colors;
+    
     private Image xyzImage;
-    //Class for coordinate transformation(e.g.Color-to-depth, depth-to-xyz, etc.)
+
+    // Class for coordinate transformation(e.g.Color-to-depth, depth-to-xyz, etc.)
     private Transformation transformation;
 
+    // Values for rendering
     private ComputeBuffer inputPositionBuffer;
     private ComputeBuffer inputColorBuffer;
 
@@ -37,9 +38,26 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
     protected int vertexTextureGeneratorKernelId;
     protected int colorTextureGeneratorKernelId;
 
+    // Values for threading
     protected Thread captureThread;
     protected readonly System.Object doneLock = new System.Object();
     protected bool done = false;
+    Capture capture = new Capture();
+    bool isCaptureDirty;
+
+    #endregion
+
+    #region Getter
+    public byte[] GetPointCloud()
+    {
+        if(xyzImage != null)
+        {
+            return vertices;
+        } else
+        {
+            return null;
+        }
+    }
     #endregion
 
     #region Monobehaviour callbacks
@@ -48,10 +66,11 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         if (!isInitialized)
         {
             InitKinect();
+            InitValues();
 
             captureThread = new Thread(UpdateKinectData);
             captureThread.Start();
-
+            
             isInitialized = true;
         }
     }
@@ -68,41 +87,20 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         {
             done = true;
         }
+        
+        captureThread?.Join();
+        inputPositionBuffer?.Dispose();
+        inputColorBuffer?.Dispose();
+        vertexRenderTexture?.Release();
+        colorRenderTexture?.Release();
 
-        if (captureThread != null)
-        {
-            captureThread.Join();
-        }
-
-        if(inputPositionBuffer != null)
-        {
-            inputPositionBuffer.Dispose();
-        }
-        if(inputColorBuffer != null)
-        {
-            inputColorBuffer.Dispose();
-        }    
-        if(vertexRenderTexture != null)
-        {
-            vertexRenderTexture.Release();
-        }
-        if(colorRenderTexture != null)
-        {
-            colorRenderTexture.Release();
-        }
-
+        kinectManager.CaptureReady -= HandleCapture;
         //Profiler.DisplayAllAverages();
-        LogInFile.DumpAllLogs();
-    }
-
-    //Stop Kinect as soon as this object disappear
-    private void OnDestroy()
-    {
-        kinectManager.StopCamera();
     }
     #endregion
 
 
+    #region Private methods
     //Initialization of Kinect
     private void InitKinect()
     {
@@ -111,27 +109,11 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         {
             Debug.LogError("Could not find object of type Kinect4AManager, please add one to your scene");
         }
-        kinectManager.StartCamera();
+        kinectManager.CaptureReady += HandleCapture;
+
         //Access to coordinate transformation information
         transformation = kinectManager.GetTransformation();
-        InitValues();
-    }
 
-    public Short3[] GetPointCloud()
-    {
-        Memory<Short3> xyzMemory;
-        if (xyzImage != null)
-        {
-            lock (xyzImage)
-            {
-                xyzMemory = xyzImage.GetPixels<Short3>();
-            }
-            return xyzMemory.ToArray();
-        }
-        else
-        {
-            return null;
-        }
     }
 
     //Prepare to draw point cloud.
@@ -141,85 +123,17 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         depthHeight = kinectManager.GetCalibration().DepthCameraCalibration.ResolutionHeight;
 
         vertices = new byte[depthWidth * depthHeight * 3 * 2]; // short3 = 3 * 2byte
-        colors = new BGRA[depthWidth * depthHeight];
+        colors = new byte[depthWidth * depthHeight * 4];
+
+        xyzImage = new Image(ImageFormat.Custom, depthWidth, depthHeight, 6 * depthWidth);
     }
 
-    private void UpdateDepthData(Capture capture)
+    private void HandleCapture(object sender, CaptureEventArgs captureArg)
     {
-        //Getting vertices of point cloud
-        xyzImage = transformation.DepthImageToPointCloud(capture.Depth);
-        if (xyzImage != null)
+        lock (capture)
         {
-            lock (vertices)
-            {
-                vertices = xyzImage.Memory.ToArray();
-                //xyzImage.CopyBytesTo(vertices, 0, 0, vertices.Length);
-            }
-            xyzImage.Dispose();
-        }
-    }
-
-    private void UpdateColorData(Capture capture)
-    {
-        //Getting color information
-        Image colorImage = transformation.ColorImageToDepthCamera(capture);
-        if (colorImage != null)
-        {
-            lock (colors)
-            {
-                colors = colorImage.GetPixels<BGRA>().ToArray();
-            }
-            colorImage.Dispose();
-        }
-    }
-
-    private void UpdateKinectData()
-    {
-        bool _done = false;
-
-        Chrono chrono = new Chrono();
-        chrono.Start();
-
-        double dt;
-        switch (kinectManager._cameraFPS)
-        {
-            case FPS.FPS15:
-                dt = 1 / 15;
-                break;
-            case FPS.FPS30:
-                dt = 1 / 30;
-                break;
-            case FPS.FPS5:
-                dt = 1 / 5;
-                break;
-            default:
-                dt = 1 / 60; // default unity fps
-                break;
-        }
-        double next_schedule = 0.0;
-
-        while (!_done)
-        {
-            double current_time = chrono.GetElapsedTime();
-
-            if (current_time > next_schedule)
-            {
-                next_schedule += dt;
-
-                Capture capture = kinectManager.GetCapture();
-                if (capture != null)
-                {
-                    UpdateDepthData(capture);
-                    UpdateColorData(capture);
-                }
-            }
-
-            lock (doneLock)
-            {
-                _done = done;
-            }
-
-            Thread.Sleep(0);
+            capture = captureArg.Capture;
+            isCaptureDirty = true;
         }
     }
 
@@ -288,5 +202,94 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
             TextureGenerator.Dispatch(colorTextureGeneratorKernelId, 10, 36, 1);
         }
     }
+
+    private void UpdateKinectData()
+    {
+        bool _done = false;
+
+        Capture _capture = null;
+        Chrono chrono = new Chrono();
+        chrono.Start();
+
+        double dt;
+        switch (kinectManager._cameraFPS)
+        {
+            case FrameRate.Fifteen:
+                dt = 1 / 15;
+                break;
+            case FrameRate.Thirty:
+                dt = 1 / 30;
+                break;
+            case FrameRate.Five:
+                dt = 1 / 5;
+                break;
+            default:
+                dt = 1 / 60; // default unity fps
+                break;
+        }
+        double next_schedule = 0.0;
+        
+        while (!_done)
+        {
+            double current_time = chrono.GetElapsedTime();
+
+            if (current_time > next_schedule)
+            {
+                next_schedule += dt;
+
+                lock (capture)
+                {
+                    if (isCaptureDirty)
+                    {
+                        _capture = capture;
+                        isCaptureDirty = false;
+                    }
+                }
+                if(_capture != null)
+                {
+                    UpdateDepthData(_capture);
+                    UpdateColorData(_capture);
+                    _capture = null;
+                }
+            }
+
+            lock (doneLock)
+            {
+                _done = done;
+            }
+
+            Thread.Sleep(0);
+        }
+    }
+
+    private void UpdateDepthData(Capture capture)
+    {
+        //Getting vertices of point cloud
+        transformation.DepthImageToPointCloud(capture.DepthImage, CalibrationGeometry.Depth, xyzImage);
+        if (xyzImage != null)
+        {
+            lock (vertices)
+            {
+                xyzImage.CopyTo(vertices);
+            }
+        }
+    }
+
+    private void UpdateColorData(Capture capture)
+    {
+        //Getting color information
+        Image colorImage = new Image(ImageFormat.ColorBgra32, depthWidth, depthHeight);
+        transformation.ColorImageToDepthCamera(capture.DepthImage, capture.ColorImage, colorImage);
+        if (colorImage != null)
+        {
+            lock (colors)
+            {
+                colorImage.CopyTo(colors);
+            }
+            colorImage.Dispose();
+        }
+    }
+    
+    #endregion
 }
 #endif
