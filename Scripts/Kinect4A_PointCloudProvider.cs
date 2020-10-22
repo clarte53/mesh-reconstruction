@@ -220,7 +220,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         chrono.Start();
 
         double dt;
-        switch (kinectManager._cameraFPS)
+        switch (kinectManager.cameraFPS)
         {
             case FrameRate.Fifteen:
                 dt = 1 / 15;
