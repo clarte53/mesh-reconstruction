@@ -66,12 +66,8 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         if (!isInitialized)
         {
             InitKinect();
-            InitValues();
 
-            captureThread = new Thread(UpdateKinectData);
-            captureThread.Start();
             
-            isInitialized = true;
         }
     }
 
@@ -111,8 +107,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         }
         kinectManager.CaptureReady += HandleCapture;
 
-        //Access to coordinate transformation information
-        transformation = kinectManager.GetTransformation();
+        
 
     }
 
@@ -135,6 +130,19 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
             capture = captureArg.Capture;
             isCaptureDirty = true;
         }
+
+		if(xyzImage == null)
+		{
+			InitValues();
+
+			captureThread = new Thread(UpdateKinectData);
+			captureThread.Start();
+
+			//Access to coordinate transformation information
+			transformation = kinectManager.GetTransformation();
+
+			isInitialized = true;
+		}
     }
 
     private void ComputePointCloudData()
