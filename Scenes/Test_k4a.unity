@@ -96,7 +96,6 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
-    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -238,7 +237,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TextureGenerator: {fileID: 7200000, guid: 63c5f52e1343caf48bc0bad38e519914, type: 3}
-  kinectManager: {fileID: 1246361841}
 --- !u!4 &349805882
 Transform:
   m_ObjectHideFlags: 0
@@ -327,9 +325,8 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 735303196}
   m_Enabled: 1
-  serializedVersion: 10
+  serializedVersion: 9
   m_Type: 1
-  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -420,14 +417,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1246361840}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bcd88f5b9c5017488609fe2140fa021, type: 3}
+  m_Script: {fileID: 11500000, guid: a4cd614acdb51a24d849138334dd317e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _imageFormat: 3
+  useRecordedVideo: 0
+  imageFormat: 3
   _colorResolution: 1
   _depthMode: 2
   _synchronizedImagesOnly: 1
   _cameraFPS: 2
+  filename: 
 --- !u!4 &1246361842
 Transform:
   m_ObjectHideFlags: 0
