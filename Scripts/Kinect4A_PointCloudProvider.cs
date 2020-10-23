@@ -66,8 +66,6 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         if (!isInitialized)
         {
             InitKinect();
-
-            
         }
     }
 
@@ -86,11 +84,18 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         
         captureThread?.Join();
         inputPositionBuffer?.Dispose();
+		inputPositionBuffer = null;
         inputColorBuffer?.Dispose();
+		inputColorBuffer = null;
         vertexRenderTexture?.Release();
+		vertexRenderTexture = null;
         colorRenderTexture?.Release();
+		colorRenderTexture = null;
 
         if(kinectManager != null) kinectManager.CaptureReady -= HandleCapture;
+
+		xyzImage = null;
+		isInitialized = false;
         //Profiler.DisplayAllAverages();
     }
     #endregion
@@ -120,6 +125,8 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         colors = new byte[depthWidth * depthHeight * 4];
 
         xyzImage = new Image(ImageFormat.Custom, depthWidth, depthHeight, 6 * depthWidth);
+
+		done = false;
     }
 
     private void HandleCapture(object sender, CaptureEventArgs captureArg)
