@@ -90,7 +90,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         vertexRenderTexture?.Release();
         colorRenderTexture?.Release();
 
-        kinectManager.CaptureReady -= HandleCapture;
+        if(kinectManager != null) kinectManager.CaptureReady -= HandleCapture;
         //Profiler.DisplayAllAverages();
     }
     #endregion
@@ -104,11 +104,10 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         if (kinectManager == null)
         {
             Debug.LogError("Could not find object of type Kinect4AManager, please add one to your scene");
+            enabled = false;
+            return;
         }
         kinectManager.CaptureReady += HandleCapture;
-
-        
-
     }
 
     //Prepare to draw point cloud.
@@ -220,7 +219,7 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
         chrono.Start();
 
         double dt;
-        switch (kinectManager._cameraFPS)
+        switch (kinectManager.cameraFPS)
         {
             case FrameRate.Fifteen:
                 dt = 1 / 15;
