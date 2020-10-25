@@ -49,29 +49,71 @@ void FillBuffer(uint3 id)
 	float4 p2 = Input_vertexTexture[uint2(id.x + 0, id.y + 1)];
 	float4 p3 = Input_vertexTexture[uint2(id.x + 1, id.y + 0)];
 	float4 p4 = Input_vertexTexture[uint2(id.x + 1, id.y + 1)];
+	
+	bool discard_triangle = false;
 
+	// discard_triangle = ShouldPointBeDiscarded(pointsToClippingBox, p1.xyz);
 
-	bool discard_p1 = ShouldPointBeDiscarded(pointsToClippingBox, p1.xyz);
+	
 
-	if (discard_p1)
+	float epsilon = 0.00001f;
+
+	if (length(p1.xyz) < epsilon || length(p2.xyz) < epsilon || length(p3.xyz) < epsilon || length(p4.xyz) < epsilon)
 	{
-		return;
+		discard_triangle = true;
 	}
 
-	if(abs(p1.z - p2.z) > maxEdgeLength || abs(p1.z - p3.z) > maxEdgeLength || abs(p2.z - p4.z) > maxEdgeLength || abs(p3.z - p4.z) > maxEdgeLength)
+	/*if(abs(p1.z - p2.z) > maxEdgeLength || abs(p1.z - p3.z) > maxEdgeLength || abs(p2.z - p4.z) > maxEdgeLength || abs(p3.z - p4.z) > maxEdgeLength)
 	{
-		return;
+		discard_triangle = true;
+	}*/
+
+	float d1 = abs(p1.z - p2.z);
+	float d2 = abs(p1.z - p3.z);
+	float d3 = abs(p1.z - p4.z);
+	float d4 = abs(p2.z - p3.z);
+	float d5 = abs(p2.z - p4.z);
+	float d6 = abs(p3.z - p4.z);
+
+	float depth = max(d1, max(d2, max(d3, max(d4, max(d5, d6)))));
+
+	float confidence;
+
+	float max_confidence_threshold = 0.01;
+
+	if (depth < max_confidence_threshold)
+	{
+		confidence = 1;
+	}
+	else
+	{
+		float max_depth = 0.02;
+		float r = (depth - max_confidence_threshold) / (max_depth - max_confidence_threshold);
+
+		if (r > 1)
+		{
+			r = 1;
+		}
+
+		confidence = 1 - r;
+	}
+	
+
+
+	if (discard_triangle)
+	{
+		p4 = p3 = p2 = p1;
 	}
 
 	int index = id.x + id.y * width;
 
-	vertexBuffer[6 * index + 0] = CreateVertex(p1);
-	vertexBuffer[6 * index + 1] = CreateVertex(p4);
-	vertexBuffer[6 * index + 2] = CreateVertex(p3);
+	vertexBuffer[6 * index + 0] = CreateVertex(p1, confidence);
+	vertexBuffer[6 * index + 1] = CreateVertex(p4, confidence);
+	vertexBuffer[6 * index + 2] = CreateVertex(p3, confidence);
 
-	vertexBuffer[6 * index + 3] = CreateVertex(p1);
-	vertexBuffer[6 * index + 4] = CreateVertex(p2);
-	vertexBuffer[6 * index + 5] = CreateVertex(p4);
+	vertexBuffer[6 * index + 3] = CreateVertex(p1, confidence);
+	vertexBuffer[6 * index + 4] = CreateVertex(p2, confidence);
+	vertexBuffer[6 * index + 5] = CreateVertex(p4, confidence);
 }
 
 
