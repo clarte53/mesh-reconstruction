@@ -52,10 +52,8 @@ void FillBuffer(uint3 id)
 	
 	bool discard_triangle = false;
 
-	// discard_triangle = ShouldPointBeDiscarded(pointsToClippingBox, p1.xyz);
-
+	discard_triangle = ShouldPointBeDiscarded(pointsToClippingBox, p1.xyz);
 	
-
 	float epsilon = 0.00001f;
 
 	if (length(p1.xyz) < epsilon || length(p2.xyz) < epsilon || length(p3.xyz) < epsilon || length(p4.xyz) < epsilon)
@@ -63,32 +61,34 @@ void FillBuffer(uint3 id)
 		discard_triangle = true;
 	}
 
-	/*if(abs(p1.z - p2.z) > maxEdgeLength || abs(p1.z - p3.z) > maxEdgeLength || abs(p2.z - p4.z) > maxEdgeLength || abs(p3.z - p4.z) > maxEdgeLength)
+	if(abs(p1.z - p2.z) > maxEdgeLength || abs(p1.z - p3.z) > maxEdgeLength || abs(p2.z - p4.z) > maxEdgeLength || abs(p3.z - p4.z) > maxEdgeLength)
 	{
 		discard_triangle = true;
-	}*/
-
-	float d1 = abs(p1.z - p2.z);
-	float d2 = abs(p1.z - p3.z);
-	float d3 = abs(p1.z - p4.z);
-	float d4 = abs(p2.z - p3.z);
-	float d5 = abs(p2.z - p4.z);
-	float d6 = abs(p3.z - p4.z);
-
-	float depth = max(d1, max(d2, max(d3, max(d4, max(d5, d6)))));
+	}
 
 	float confidence;
 
-	float max_confidence_threshold = 0.01;
+	float4 p1p2 = p2 - p1;
+	float4 p1p3 = p3 - p1;
 
-	if (depth < max_confidence_threshold)
+	float3 n = normalize(cross(p1p2.xyz, p1p3.xyz));
+
+	float3 v = -normalize(p1.xyz);
+
+	float scal = dot(n, v);
+
+	float angle = acos(scal);
+
+	float max_confidence_threshold = 1.0;
+
+	if (angle < max_confidence_threshold)
 	{
 		confidence = 1;
 	}
 	else
 	{
-		float max_depth = 0.02;
-		float r = (depth - max_confidence_threshold) / (max_depth - max_confidence_threshold);
+		float max_angle = 1.5;
+		float r = (angle - max_confidence_threshold) / (max_angle - max_confidence_threshold);
 
 		if (r > 1)
 		{
@@ -98,8 +98,6 @@ void FillBuffer(uint3 id)
 		confidence = 1 - r;
 	}
 	
-
-
 	if (discard_triangle)
 	{
 		p4 = p3 = p2 = p1;
