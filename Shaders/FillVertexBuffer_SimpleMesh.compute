@@ -79,7 +79,7 @@ void FillBuffer(uint3 id)
 
 	float angle = acos(scal);
 
-	float max_confidence_threshold = 1.0;
+	float max_confidence_threshold = 1.1;
 
 	if (angle < max_confidence_threshold)
 	{
@@ -87,7 +87,7 @@ void FillBuffer(uint3 id)
 	}
 	else
 	{
-		float max_angle = 1.5;
+		float max_angle = 1.4;
 		float r = (angle - max_confidence_threshold) / (max_angle - max_confidence_threshold);
 
 		if (r > 1)
