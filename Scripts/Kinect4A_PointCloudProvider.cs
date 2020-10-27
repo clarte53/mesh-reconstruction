@@ -92,7 +92,6 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
 		colorRenderTexture = null;
 
         kinectSensor.CaptureReady -= HandleCapture;
-		kinectSensor.kinectClosed -= KinectStopped;
 
 		xyzImage = null;
 		isInitialized = false;
@@ -112,7 +111,6 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
             return;
         }
         kinectSensor.CaptureReady += HandleCapture;
-		kinectSensor.kinectClosed += KinectStopped;
 	}
 
 	//Prepare to draw point cloud.
@@ -150,11 +148,6 @@ public class Kinect4A_PointCloudProvider : PointCloudProvider
 			isInitialized = true;
 		}
     }
-
-	private void KinectStopped()
-	{
-		enabled = false;
-	}
 
 	private void ComputePointCloudData()
     {
