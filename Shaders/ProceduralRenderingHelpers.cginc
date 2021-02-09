@@ -15,14 +15,15 @@ float2 DecodeUV(float encoded_uv)
 	return float2((float)u / 65535.0, (float)v / 65535.0);
 }
 
-Vert CreateVertex(float4 v)
+Vert CreateVertex(float4 v, float confidence)
 {
 	Vert vert;
 
 	vert.position.x = v.x;
 	vert.position.y = v.y;
 	vert.position.z = v.z;
-	vert.position.w = 1.0f;
+	//vert.position.w = 1.0f;
+	vert.position.w = confidence;
 
 	vert.uv = DecodeUV(v.w);
 

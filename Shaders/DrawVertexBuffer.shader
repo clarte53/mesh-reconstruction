@@ -3,10 +3,10 @@ Shader "Custom/DrawVertexBuffer"
 {
 	SubShader
 	{
-		/*Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
+		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
 
-		ZWrite Off
-		Blend SrcAlpha OneMinusSrcAlpha*/
+		//ZWrite Off
+		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
 		{
@@ -32,6 +32,7 @@ Shader "Custom/DrawVertexBuffer"
 			{
 				float4 pos : SV_POSITION;
 				float2 uv : TEXCOORDS0;
+				float alpha : TEXCCORDS1;
 			};
 
 
@@ -42,9 +43,15 @@ Shader "Custom/DrawVertexBuffer"
 				
 				Vert vert = vertexBuffer[id];
 
+				OUT.alpha = vert.position.a;
+
+				vert.position.a = 1;
+
 				OUT.pos = mul(mul(UNITY_MATRIX_VP, modelMatrix), vert.position);
 
 				OUT.uv = vert.uv;
+
+				
 				
 				return OUT;
 			}
@@ -54,7 +61,29 @@ Shader "Custom/DrawVertexBuffer"
 			// Fragment Shader
 			float4 frag(v2f IN) : SV_Target
 			{
-				return tex2D(_MainTex, IN.uv);
+				float4 color;
+
+				color = tex2D(_MainTex, IN.uv);
+				
+				bool debug = false;
+
+				if (!debug)
+				{
+					color.a = IN.alpha;
+				}
+				else
+				{
+					if (IN.alpha < 1)
+					{
+						color = float4(0.5 + 0.5*(1 - IN.alpha), 0, 0, 1);
+					}
+					else
+					{
+						color = float4(0, 1, 0, 1);
+					}
+				}
+				
+				return color;
 			}
 
 			ENDCG
