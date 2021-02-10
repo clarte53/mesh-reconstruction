@@ -7,12 +7,14 @@
 #pragma kernel ClearVertexBuffer_741_1_1
 #pragma kernel ClearVertexBuffer_256_4_1
 #pragma kernel ClearVertexBuffer_64_16_1
+#pragma kernel ClearVertexBuffer_32_32_1
 
 #pragma kernel FillVertexBuffer_512_2_1
 #pragma kernel FillVertexBuffer_256_4_1
 #pragma kernel FillVertexBuffer_21_47_1
 #pragma kernel FillVertexBuffer_128_8_1
 #pragma kernel FillVertexBuffer_64_16_1
+#pragma kernel FillVertexBuffer_32_32_1
 
 // Fallback kernels
 #pragma kernel ClearVertexBuffer_1_1_1
@@ -149,6 +151,11 @@ void ClearVertexBuffer_64_16_1(uint3 id : SV_DispatchThreadID) {
 	ClearBuffer(id);
 }
 
+[numthreads(32, 32, 1)]
+void ClearVertexBuffer_32_32_1(uint3 id : SV_DispatchThreadID) {
+	ClearBuffer(id);
+}
+
 
 [numthreads(512, 2, 1)]
 void FillVertexBuffer_512_2_1(uint3 id : SV_DispatchThreadID)
@@ -176,6 +183,12 @@ void FillVertexBuffer_128_8_1(uint3 id : SV_DispatchThreadID)
 
 [numthreads(64, 16, 1)]
 void FillVertexBuffer_64_16_1(uint3 id : SV_DispatchThreadID)
+{
+	FillBuffer(id);
+}
+
+[numthreads(32, 32, 1)]
+void FillVertexBuffer_32_32_1(uint3 id : SV_DispatchThreadID)
 {
 	FillBuffer(id);
 }
