@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if USE_RECORD3D
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Record3D;
@@ -164,3 +165,4 @@ public class Record3D_PointCloudProvider : PointCloudProvider
        
     }
 }
+#endif
