@@ -30,6 +30,9 @@ RWStructuredBuffer<Vert> vertexBuffer;
 
 float maxEdgeLength;
 
+float startFadeAngle = 1.1;
+float endFadeAngle = 1.4;
+
 void ClearBuffer(uint3 id)
 {
 	//The mesh read back code treats verts with a -1 for w position
@@ -47,6 +50,9 @@ void ClearBuffer(uint3 id)
 
 void FillBuffer(uint3 id)
 {
+	float epsilon = 0.00001f;
+	float confidence = 1.0;
+
 	float4 p1 = Input_vertexTexture[uint2(id.x + 0, id.y + 0)];
 	float4 p2 = Input_vertexTexture[uint2(id.x + 0, id.y + 1)];
 	float4 p3 = Input_vertexTexture[uint2(id.x + 1, id.y + 0)];
@@ -54,56 +60,66 @@ void FillBuffer(uint3 id)
 	
 	bool discard_triangle = false;
 
+	// Test whether the p1 is in clipping box
 	discard_triangle = ShouldPointBeDiscarded(pointsToClippingBox, p1.xyz);
 	
-	float epsilon = 0.00001f;
-
-	if (length(p1.xyz) < epsilon || length(p2.xyz) < epsilon || length(p3.xyz) < epsilon || length(p4.xyz) < epsilon)
+	if (!discard_triangle)
 	{
-		discard_triangle = true;
+		// Test whether one of the vertices is invalid (reported as at the origin)
+		if (length(p1.xyz) < epsilon || length(p2.xyz) < epsilon || length(p3.xyz) < epsilon || length(p4.xyz) < epsilon)
+		{
+			discard_triangle = true;
+		}
 	}
 
-	if(abs(p1.z - p2.z) > maxEdgeLength || abs(p1.z - p3.z) > maxEdgeLength || abs(p2.z - p4.z) > maxEdgeLength || abs(p3.z - p4.z) > maxEdgeLength)
+	if (!discard_triangle)
 	{
-		discard_triangle = true;
+		// Test depth gradient against maxEdgeLength threshold
+		if (abs(p1.z - p2.z) > maxEdgeLength || abs(p1.z - p3.z) > maxEdgeLength || abs(p2.z - p4.z) > maxEdgeLength || abs(p3.z - p4.z) > maxEdgeLength)
+		{
+			discard_triangle = true;
+		}
 	}
 
-	float confidence;
-
-	float4 p1p2 = p2 - p1;
-	float4 p1p3 = p3 - p1;
-
-	float3 n = normalize(cross(p1p2.xyz, p1p3.xyz));
-
-	float3 v = -normalize(p1.xyz);
-
-	float scal = dot(n, v);
-
-	float angle = acos(scal);
-
-	float max_confidence_threshold = 1.1;
-
-	if (angle < max_confidence_threshold)
+	if (discard_triangle)
 	{
-		confidence = 1;
+		p1 = float4(0.0, 0.0, 0.0, 1.0);
+		p4 = p3 = p2 = p1;
 	}
 	else
 	{
-		float max_angle = 1.4;
-		float r = (angle - max_confidence_threshold) / (max_angle - max_confidence_threshold);
+		float4 p1p2 = p2 - p1;
+		float4 p1p3 = p3 - p1;
 
-		if (r > 1)
+		// Face normal
+		float3 n = normalize(cross(p1p2.xyz, p1p3.xyz));
+
+		// Projection direction
+		float3 v = -normalize(p1.xyz);
+
+		// Compute angle between n and v
+		float scal = dot(n, v);
+		float angle = acos(scal);
+
+		if (angle < startFadeAngle)
 		{
-			r = 1;
+			// Maximum confidence if face is globally facing the projection direction
+			confidence = 1.0;
 		}
+		else
+		{
+			// Linearly decrease confidence passed startFadeAngle, to reach 0 at endFadeAngle
+			float r = (angle - startFadeAngle) / (endFadeAngle - startFadeAngle);
 
-		confidence = 1 - r;
+			if (r > 1)
+			{
+				r = 1;
+			}
+
+			confidence = 1.0 - r;
+		}
 	}
 	
-	if (discard_triangle)
-	{
-		p4 = p3 = p2 = p1;
-	}
 
 	int index = id.x + id.y * width;
 
