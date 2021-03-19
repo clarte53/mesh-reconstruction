@@ -139,7 +139,7 @@ public class Record3D_PointCloudProvider : PointCloudProvider
         }
         else
         {
-            Debug.LogError(string.Format("Could not start streaming with device #{0}. Ensure your iPhone/iPad is connected via USB, Record3D is running in USB Streaming Mode and that you have pressed the red toggle button. For more details read the Stick Note in VFX Graph Editor.", selectedDevice));
+            Debug.LogError(string.Format("Could not start streaming with device #{0}. Ensure your iPhone/iPad is connected via USB, Record3D is running in USB Streaming Mode and that you have pressed the red toggle button.", selectedDevice));
             return;
         }
     }
