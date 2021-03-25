@@ -89,13 +89,12 @@ public class PointCloudRenderer : MonoBehaviour
 	/// </summary>
 	void DrawPointcloud()
 	{
-		//Since mesh is in a buffer need to use DrawProcedual called from OnPostRender or OnRenderObject
 		drawBuffer.SetBuffer("vertexBuffer", vertexBuffer);
 		drawBuffer.SetMatrix("modelMatrix", transform.localToWorldMatrix);
 		drawBuffer.SetTexture("_MainTex", provider.ColorTexture);
 		drawBuffer.SetPass(0);
 
-		Graphics.DrawProcedural(drawBuffer, new Bounds(Vector3.zero, 1000.0f * Vector3.one), MeshTopology.Triangles, vertexBufferMaxSize.x * vertexBufferMaxSize.y * vertexBufferMaxSize.z, 1, Camera.main);
+		Graphics.DrawProcedural(drawBuffer, new Bounds(Vector3.zero, 1000.0f * Vector3.one), MeshTopology.Triangles, vertexBufferMaxSize.x * vertexBufferMaxSize.y * vertexBufferMaxSize.z);
 	}
 
 	/// <summary>
