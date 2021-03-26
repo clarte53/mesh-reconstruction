@@ -94,7 +94,12 @@ public class PointCloudRenderer : MonoBehaviour
 		drawBuffer.SetTexture("_MainTex", provider.ColorTexture);
 		drawBuffer.SetPass(0);
 
-		Graphics.DrawProcedural(drawBuffer, new Bounds(Vector3.zero, 1000.0f * Vector3.one), MeshTopology.Triangles, vertexBufferMaxSize.x * vertexBufferMaxSize.y * vertexBufferMaxSize.z);
+		Bounds bb = new Bounds();
+		
+		bb.Encapsulate(transform.InverseTransformPoint(clippingBox.bounds.min));
+		bb.Encapsulate(transform.InverseTransformPoint(clippingBox.bounds.max));
+
+		Graphics.DrawProcedural(drawBuffer, bb, MeshTopology.Triangles, vertexBufferMaxSize.x * vertexBufferMaxSize.y * vertexBufferMaxSize.z);
 	}
 
 	/// <summary>
