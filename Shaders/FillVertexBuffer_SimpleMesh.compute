@@ -2,6 +2,7 @@
 
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel ClearVertexBuffer_1022_1_1
+#pragma kernel ClearVertexBuffer_512_2_1
 #pragma kernel ClearVertexBuffer_719_1_1
 #pragma kernel ClearVertexBuffer_990_1_1
 #pragma kernel ClearVertexBuffer_741_1_1
@@ -104,7 +105,7 @@ void FillBuffer(uint3 id)
 	{
 		p4 = p3 = p2 = p1;
 	}
-
+	confidence = 1;
 	int index = id.x + id.y * width;
 
 	vertexBuffer[6 * index + 0] = CreateVertex(p1, confidence);
@@ -119,6 +120,12 @@ void FillBuffer(uint3 id)
 
 [numthreads(1022, 1, 1)]
 void ClearVertexBuffer_1022_1_1(uint3 id : SV_DispatchThreadID)
+{
+	ClearBuffer(id);
+}
+
+[numthreads(512, 2, 1)]
+void ClearVertexBuffer_512_2_1(uint3 id : SV_DispatchThreadID)
 {
 	ClearBuffer(id);
 }
