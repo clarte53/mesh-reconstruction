@@ -1,6 +1,6 @@
 Unity plugin for real-time reconstruction with an RGBD camera.
 Depends on [clarte-utils](https://github.com/clarte53/clarte-utils.git "clarte-utils") module.
-Currently available sources include StereoLabs Zed/ZedMini and Kinect v2. A PLY file loader is available as well.
+Currently available sources include StereoLabs Zed/ZedMini, Kinect v2, Azure Kinect and iOS depth-enabled devices through the [Record3D app](https://record3d.app/). A PLY file loader is available as well.
 
 Getting started
 ===============
@@ -12,9 +12,9 @@ Similarly, required sources must be cloned in the "Assets" folder as well. The f
 - [Kinect v2](https://github.com/clarte53/kinectv2-unity)
 - [Kinect 4A](https://gitlab.clarte.asso.fr/projets-collaboratifs/lobbybot/kinect4a-unity)
 
-The only exception is the PLY file loader that does not require any dependency.
+The only exceptions are the Record3D source and the PLY file loader that do not require any dependency.
 
-Then to enable a source it should be activated by adding USE_[source_name] to the scripting define symbols. Currently supported flags are USE_ZED, USE_KINECT, USE_K4A and USE_PLY.
+Then to enable a source it should be activated by adding USE_[source_name] to the scripting define symbols. Currently supported flags are USE_ZED, USE_KINECT, USE_K4A, USE_RECORD3D and USE_PLY.
 
 In the case of a head-mounted RGBD camera, a [Camera Time Warping](https://ieeexplore.ieee.org/document/8699171) algoritm has been implemented. To achieve good results, head tracking sampling has to be performed at high frequency, which is not possible within Unity. Therefore an external process is required to allow for such high-freq sampling and then feed the Unity module. This process can be built from [this](https://github.com/clarte53/openvr-tracking) repo (commit bfe4ac1, others not tested). Pre-built binaries are available from the [Release](https://github.com/clarte53/openvr-tracking/releases/tag/0.1) tab. The executable is expected in the same folder as the calling application (or in the project folder for use in the Editor) and to be named 'openvr-tracking.exe'.
 

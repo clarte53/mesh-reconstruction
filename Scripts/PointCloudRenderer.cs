@@ -80,20 +80,26 @@ public class PointCloudRenderer : MonoBehaviour
 				UpdateVertexBuffer();
 			}
 		}
+
+		DrawPointcloud();
 	}
 
 	/// <summary>
 	/// Draw the mesh when on rendering of the object.
 	/// </summary>
-	protected void OnRenderObject()
+	void DrawPointcloud()
 	{
-		//Since mesh is in a buffer need to use DrawProcedual called from OnPostRender or OnRenderObject
 		drawBuffer.SetBuffer("vertexBuffer", vertexBuffer);
 		drawBuffer.SetMatrix("modelMatrix", transform.localToWorldMatrix);
 		drawBuffer.SetTexture("_MainTex", provider.ColorTexture);
 		drawBuffer.SetPass(0);
 
-		Graphics.DrawProceduralNow(MeshTopology.Triangles, vertexBufferMaxSize.x * vertexBufferMaxSize.y * vertexBufferMaxSize.z);
+		Bounds bb = new Bounds();
+		
+		bb.Encapsulate(transform.InverseTransformPoint(clippingBox.bounds.min));
+		bb.Encapsulate(transform.InverseTransformPoint(clippingBox.bounds.max));
+
+		Graphics.DrawProcedural(drawBuffer, bb, MeshTopology.Triangles, vertexBufferMaxSize.x * vertexBufferMaxSize.y * vertexBufferMaxSize.z);
 	}
 
 	/// <summary>
