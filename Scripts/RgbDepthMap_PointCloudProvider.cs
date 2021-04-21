@@ -16,11 +16,14 @@ public class RgbDepthMap_PointCloudProvider : PointCloudProvider
 	private Matrix4x4 imagePoseToDepthCoords;
 
 	protected int vertexTextureGeneratorKernelId;
-
+	
 	public bool processDepthEdge = false;
-	public ComputeShader edgeSmoothingShader { get; set; }
-	public float laplacianThreshold { get; set; } = 100;
-	public int dilateRadius { get; set; } = 2;
+	[HideInInspector]
+	public ComputeShader edgeSmoothingShader;
+	[HideInInspector]
+	public float laplacianThreshold  = 100;
+	[HideInInspector]
+	public int dilateRadius = 2;
 	private Texture processedEdgeTexture;
 
 	public void Awake()

@@ -20,6 +20,7 @@ bool laplacian(int2 xy) {
 bool dilate(int2 xy) {
 	bool isEdge = false;
 
+	radius = max(0, radius);
 	for (int x = -radius; x <= radius; ++x) {
 		for (int y = -radius; y <= radius; ++y) {
 			isEdge = isEdge || laplacian(xy + int2(x, y));
