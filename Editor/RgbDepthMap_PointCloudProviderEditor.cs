@@ -1,23 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 [CustomEditor(typeof(RgbDepthMap_PointCloudProvider))]
 public class RgbDepthMap_PointCloudProviderEditor : UnityEditor.Editor
 {
+	SerializedProperty computeShaderProperty;
+	SerializedProperty laplaceProperty;
+	SerializedProperty dilateProperty;
 
-    public override void OnInspectorGUI()
+	private void OnEnable()
+	{
+		computeShaderProperty = serializedObject.FindProperty("edgeSmoothingShader");
+		laplaceProperty = serializedObject.FindProperty("laplacianThreshold");
+		dilateProperty = serializedObject.FindProperty("dilateRadius");
+	}
+	public override void OnInspectorGUI()
 	{
 		DrawDefaultInspector();
 		RgbDepthMap_PointCloudProvider myScript = (RgbDepthMap_PointCloudProvider)target;
 
-		if(myScript.processDepthEdge)
+		if (myScript.processDepthEdge)
 		{
-			myScript.edgeSmoothingShader = EditorGUILayout.ObjectField("Edge Filtering Shader", myScript.edgeSmoothingShader,
-				typeof(ComputeShader), true) as ComputeShader;
-			myScript.laplacianThreshold = EditorGUILayout.FloatField("Laplacian threshold", myScript.laplacianThreshold);
-			myScript.dilateRadius = EditorGUILayout.IntField("Dilate radius", myScript.dilateRadius);
+			EditorGUILayout.PropertyField(computeShaderProperty);
+			EditorGUILayout.PropertyField(laplaceProperty);
+			EditorGUILayout.PropertyField(dilateProperty);
+
 		}
+
+		serializedObject.ApplyModifiedProperties();
 	}
 }
