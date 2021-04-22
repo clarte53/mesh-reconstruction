@@ -69,6 +69,18 @@ public class RgbDepthMap_PointCloudProvider : PointCloudProvider
 		CreatePointCloud(pcData.depthData, pcData.colorData);
 	}
 
+	public void SetData(Texture depth_texture, Texture color_texture, float[] intrinsics)
+	{
+		SetDepthParameters(depth_texture.width, depth_texture.height, intrinsics[0], intrinsics[1], intrinsics[2], intrinsics[3]);
+		SetImageParameters(depth_texture.width, depth_texture.height, intrinsics[0], intrinsics[1], intrinsics[2], intrinsics[3]);
+		SetImagePoseInDepthSpace(new float[] {1, 0, 0, 0,
+											0, 1, 0, 0,
+											0, 0, 1, 0,
+											0, 0, 0, 1});
+
+		CreatePointCloud(depth_texture, color_texture);
+	}
+
 	private void SetDepthParameters(int width, int height, float fx, float fy, float cx, float cy)
 	{
 		depthSize.x = width;
