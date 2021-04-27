@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 #if USE_STRUCTURECORE
 using StructureCoreAPI;
 #endif
@@ -11,8 +12,6 @@ public class PointCloudRgbDepthData
 	public int[] imageSize = new int[2];
 	public float[] imageIntrinsec = new float[4];
 	public float[] imagePoseToDepthCoords = new float[16];
-	public float[] depthData;
-	public byte[] colorData;
 	public long millisec = 0;
 
 	public PointCloudRgbDepthData()
@@ -55,4 +54,16 @@ public class PointCloudRgbDepthData
 		Buffer.BlockCopy(StructureCore.Instance.ImageData, 0, colorData, 0, StructureCore.Instance.ImageData.Length * sizeof(byte));
 	}
 #endif
+}
+
+public class PointCloudRgbDepthData_CPU : PointCloudRgbDepthData
+{
+	public float[] depthData;
+	public byte[] colorData;
+}
+
+public class PointCloudRgbDepthData_GPU : PointCloudRgbDepthData
+{
+	public Texture depthData;
+	public Texture colorData;
 }

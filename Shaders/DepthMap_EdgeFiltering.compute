@@ -1,0 +1,41 @@
+﻿#pragma kernel DepthProcessing
+
+Texture2D InputDepth; 
+float threshold; 
+int radius;
+RWTexture2D<half> OutputTexture;
+
+bool laplacian(int2 xy) {
+	half c0 = InputDepth[xy];
+	half c1 = InputDepth[xy + int2(-1, 0)];
+	half c2 = InputDepth[xy + int2(0, 1)];
+	half c3 = InputDepth[xy + int2(0, -1)];
+	half c4 = InputDepth[xy + int2(1, 0)];
+
+	half edge = c1 + c2 + c3 + c4 - 4 * c0;
+
+	return edge > threshold;
+}
+
+bool dilate(int2 xy) {
+	bool isEdge = false;
+
+	radius = max(0, radius);
+	for (int x = -radius; x <= radius; ++x) {
+		for (int y = -radius; y <= radius; ++y) {
+			isEdge = isEdge || laplacian(xy + int2(x, y));
+		}
+	}
+	return isEdge;
+}
+
+[numthreads(1,1,1)]
+void DepthProcessing (uint3 id : SV_DispatchThreadID)
+{
+	if (dilate(id.xy)) {
+		OutputTexture[id.xy] = 0;
+	}
+	else {
+		OutputTexture[id.xy] = InputDepth[id.xy];
+	}
+}
