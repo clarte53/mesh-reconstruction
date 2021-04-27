@@ -50,7 +50,7 @@ public class PointCloudRenderer : MonoBehaviour
 	{
 		// Retrieve with provider
 		provider = gameObject.GetComponent<PointCloudProvider>();
-		//drawBuffer = Material.Instantiate(drawBuffer);
+		drawBuffer = Material.Instantiate(drawBuffer);
 		vertexBufferGenerator = ComputeShader.Instantiate(vertexBufferGenerator);
 	}
 
