@@ -10,7 +10,7 @@ repository must be cloned into your Unity project as submodules inside the "Asse
 Similarly, required sources must be cloned in the "Assets" folder as well. The following sources are currently supported:
 - [Zed/ZedMini](https://github.com/stereolabs/zed-unity)
 - [Kinect v2](https://github.com/clarte53/kinectv2-unity)
-- [Kinect 4A](https://gitlab.clarte.asso.fr/projets-collaboratifs/lobbybot/kinect4a-unity)
+- [Kinect 4A](https://github.com/clarte53/kinect4a-unity)
 
 The only exceptions are the Record3D source and the PLY file loader that do not require any dependency.
 
